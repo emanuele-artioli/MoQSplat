@@ -93,13 +93,9 @@ Large-scale Gaussians are transmitted earlier, favoring primitives covering larg
 # 📦 Requirements
 
 Python dependencies:
-torch
-gsplat
-ultralytics
-plyfile
-opencv-python
-scipy
-
+```bash
+torch | gsplat | ultralytics | plyfile | opencv-python | scipy
+```
 Additionally, FFmpeg with **libvmaf** support is required:
 
 ```bash
