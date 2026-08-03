@@ -4,7 +4,7 @@
 [![VMAF](https://img.shields.io/badge/Quality-VMAF-green)]()
 [![MoQSplat](https://img.shields.io/badge/Based%20on-MoQSplat-orange)]()
 
-This repository extends **MoQSplat** with a publisher-side pipeline for **progressive 3D Gaussian Splatting (3DGS) preparation and rate-distortion evaluation**.
+This repository extends **MoQSplat** with a publisher-side pipeline for **progressive 3D Gaussian Splatting (3DGS) preparation and layer-distortion evaluation**.
 
 The framework enables object-aware Gaussian selection, progressive layer generation, view-consistent rendering, and **VMAF-based quality analysis** to study the trade-off between transmitted Gaussian data and visual quality under bandwidth constraints.
 
@@ -20,7 +20,7 @@ The publisher pipeline provides an end-to-end workflow for generating and evalua
 | 🧩 **Progressive Layering** | Hierarchical Gaussian transmission levels (20%, 40%, 60%, 80%, 100%) |
 | 🎥 **Trajectory Generation** | Smooth camera orbit generation around selected objects |
 | 🖥️ **Progressive Rendering** | Rendering each Gaussian transmission layer |
-| 📈 **RD Evaluation** | VMAF-based rate-distortion analysis |
+| 📈 **RD Evaluation** | VMAF-based layer-distortion analysis |
 
 ---
 
@@ -69,9 +69,9 @@ publisher/
 
 ---
 
-# 🧠 Gaussian Pruning Strategies
+# 🧠 Gaussian Pruning Stlayergies
 
-The framework supports different Gaussian ordering strategies for progressive transmission.
+The framework supports different Gaussian ordering stlayergies for progressive transmission.
 
 ## 🔵 Opacity-based Pruning
 
@@ -110,7 +110,7 @@ ffmpeg -filters | grep libvmaf
 1- Run the complete RD evaluation:
 ./compute_rd_vmaf.sh
 
-2-Evaluate a specific ranking strategy:
+2-Evaluate a specific ranking stlayergy:
 ./compute_rd_vmaf.sh --rank opacity 
 
 3- Evaluate a specific scene:
