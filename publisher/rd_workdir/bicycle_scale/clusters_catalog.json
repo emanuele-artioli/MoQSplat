@@ -1,0 +1,84 @@
+{
+  "scene": "Bicycle.ply",
+  "method": "dbscan",
+  "eps": 2.4356872558593747,
+  "eps_source": "frac=0.03",
+  "n_clusters": 2,
+  "n_source_objects": 2,
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "label": "bench_bicycle",
+      "n_objects": 2,
+      "object_ids": [
+        0,
+        1
+      ],
+      "object_classes": [
+        "bicycle",
+        "bench"
+      ],
+      "n_gaussians": 1451910,
+      "total_bytes": 360081335,
+      "total_kb": 351641.93,
+      "dir_relative": "clusters/cluster_000_bench_bicycle_n1451910",
+      "n_layers": 5,
+      "preview_camera": {
+        "format": "legacy",
+        "angle": -95.23020065429756,
+        "elevation": -37.968102790136435,
+        "x": 2.952406707153249,
+        "y": -0.3798490662183318,
+        "z": 0.7499270130017052,
+        "fx": 520.0,
+        "fy": 320.0,
+        "cx": 400.0,
+        "cy": 300.0,
+        "width": 800,
+        "height": 600,
+        "centroid": [
+          0.8451297283172607,
+          1.2715232372283936,
+          0.5570297837257385
+        ],
+        "extent": 3.5229945182800293,
+        "fit_fraction": 0.7
+      }
+    },
+    {
+      "cluster_id": 1,
+      "label": "other",
+      "n_objects": 0,
+      "object_ids": [],
+      "object_classes": [
+        "other"
+      ],
+      "n_gaussians": 4680044,
+      "total_bytes": 1160658567,
+      "total_kb": 1133455.63,
+      "dir_relative": "clusters/cluster_001_other_n4680044",
+      "n_layers": 5,
+      "preview_camera": {
+        "format": "legacy",
+        "angle": 39.76979934570244,
+        "elevation": -37.968102790136435,
+        "x": -20.96159014893342,
+        "y": -25.041388452633246,
+        "z": -20.667206930862356,
+        "fx": 520.0,
+        "fy": 320.0,
+        "cx": 400.0,
+        "cy": 300.0,
+        "width": 800,
+        "height": 600,
+        "centroid": [
+          -4.532479763031006,
+          -4.999162673950195,
+          -0.9272279739379883
+        ],
+        "extent": 42.75756072998047,
+        "fit_fraction": 0.7
+      }
+    }
+  ]
+}
