@@ -1,0 +1,923 @@
+{
+  "scene": "Bicycle.ply",
+  "n_total_gaussians": 6131954,
+  "rank_method": "scale",
+  "layer_percentages": [
+    20.0,
+    40.0,
+    60.0,
+    80.0,
+    100.0
+  ],
+  "total_bytes_scene": 1610020112,
+  "total_kb_scene": 1572285.27,
+  "total_mb_scene": 1535.435,
+  "per_level_aggregate": [
+    {
+      "level": 0,
+      "name": "base",
+      "delta_bytes_scene": 322004072,
+      "delta_kb_scene": 314457.1,
+      "delta_gaussians_scene": 1298385,
+      "cumulative_bytes_scene": 322004072,
+      "cumulative_kb_scene": 314457.1,
+      "cumulative_mb_scene": 307.087,
+      "cumulative_gaussians_scene": 1298385,
+      "download_cumulative_ms": {
+        "1Mbps_ms": 2576032.58,
+        "5Mbps_ms": 515206.52,
+        "10Mbps_ms": 257603.26,
+        "25Mbps_ms": 103041.3,
+        "50Mbps_ms": 51520.65,
+        "100Mbps_ms": 25760.33
+      }
+    },
+    {
+      "level": 1,
+      "name": "enh1",
+      "delta_bytes_scene": 322004072,
+      "delta_kb_scene": 314457.1,
+      "delta_gaussians_scene": 1298385,
+      "cumulative_bytes_scene": 644008144,
+      "cumulative_kb_scene": 628914.2,
+      "cumulative_mb_scene": 614.174,
+      "cumulative_gaussians_scene": 2596770,
+      "download_cumulative_ms": {
+        "1Mbps_ms": 5152065.15,
+        "5Mbps_ms": 1030413.03,
+        "10Mbps_ms": 515206.52,
+        "25Mbps_ms": 206082.61,
+        "50Mbps_ms": 103041.3,
+        "100Mbps_ms": 51520.65
+      }
+    },
+    {
+      "level": 2,
+      "name": "enh2",
+      "delta_bytes_scene": 322003824,
+      "delta_kb_scene": 314456.86,
+      "delta_gaussians_scene": 1298384,
+      "cumulative_bytes_scene": 966011968,
+      "cumulative_kb_scene": 943371.06,
+      "cumulative_mb_scene": 921.261,
+      "cumulative_gaussians_scene": 3895154,
+      "download_cumulative_ms": {
+        "1Mbps_ms": 7728095.74,
+        "5Mbps_ms": 1545619.15,
+        "10Mbps_ms": 772809.57,
+        "25Mbps_ms": 309123.83,
+        "50Mbps_ms": 154561.91,
+        "100Mbps_ms": 77280.96
+      }
+    },
+    {
+      "level": 3,
+      "name": "enh3",
+      "delta_bytes_scene": 322004072,
+      "delta_kb_scene": 314457.1,
+      "delta_gaussians_scene": 1298385,
+      "cumulative_bytes_scene": 1288016040,
+      "cumulative_kb_scene": 1257828.16,
+      "cumulative_mb_scene": 1228.348,
+      "cumulative_gaussians_scene": 5193539,
+      "download_cumulative_ms": {
+        "1Mbps_ms": 10304128.32,
+        "5Mbps_ms": 2060825.66,
+        "10Mbps_ms": 1030412.83,
+        "25Mbps_ms": 412165.13,
+        "50Mbps_ms": 206082.57,
+        "100Mbps_ms": 103041.28
+      }
+    },
+    {
+      "level": 4,
+      "name": "enh4",
+      "delta_bytes_scene": 322004072,
+      "delta_kb_scene": 314457.1,
+      "delta_gaussians_scene": 1298385,
+      "cumulative_bytes_scene": 1610020112,
+      "cumulative_kb_scene": 1572285.27,
+      "cumulative_mb_scene": 1535.435,
+      "cumulative_gaussians_scene": 6491924,
+      "download_cumulative_ms": {
+        "1Mbps_ms": 12880160.9,
+        "5Mbps_ms": 2576032.18,
+        "10Mbps_ms": 1288016.09,
+        "25Mbps_ms": 515206.44,
+        "50Mbps_ms": 257603.22,
+        "100Mbps_ms": 128801.61
+      }
+    }
+  ],
+  "note": "File sizes are independent of --layer_rank because each gaussian is a fixed-size row and percentages determine row count per layer. The rank method changes WHICH gaussians populate each layer, affecting visual quality progression but not byte count. For variable layer sizes, use non-uniform --layer_percentages such as '10,30,60,100'.",
+  "objects": [
+    {
+      "object": "bicycle_obj000",
+      "n_total": 1365151,
+      "rank_method": "scale",
+      "layers": [
+        {
+          "layer": 0,
+          "name": "base",
+          "delta_gaussians": 273030,
+          "cumulative_pct": 20.0,
+          "cumulative_gaussians": 273030,
+          "file": "layer_0_base_n273030.ply",
+          "size_bytes": 67712971,
+          "size_kb": 66125.95,
+          "cumulative_bytes": 67712971,
+          "cumulative_kb": 66125.95,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 541703.77,
+            "5Mbps_ms": 108340.75,
+            "10Mbps_ms": 54170.38,
+            "25Mbps_ms": 21668.15,
+            "50Mbps_ms": 10834.08,
+            "100Mbps_ms": 5417.04
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 541703.77,
+            "5Mbps_ms": 108340.75,
+            "10Mbps_ms": 54170.38,
+            "25Mbps_ms": 21668.15,
+            "50Mbps_ms": 10834.08,
+            "100Mbps_ms": 5417.04
+          }
+        },
+        {
+          "layer": 1,
+          "name": "enh1",
+          "delta_gaussians": 273030,
+          "cumulative_pct": 40.0,
+          "cumulative_gaussians": 546060,
+          "file": "layer_1_enh1_n273030.ply",
+          "size_bytes": 67712971,
+          "size_kb": 66125.95,
+          "cumulative_bytes": 135425942,
+          "cumulative_kb": 132251.9,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 541703.77,
+            "5Mbps_ms": 108340.75,
+            "10Mbps_ms": 54170.38,
+            "25Mbps_ms": 21668.15,
+            "50Mbps_ms": 10834.08,
+            "100Mbps_ms": 5417.04
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 1083407.54,
+            "5Mbps_ms": 216681.51,
+            "10Mbps_ms": 108340.75,
+            "25Mbps_ms": 43336.3,
+            "50Mbps_ms": 21668.15,
+            "100Mbps_ms": 10834.08
+          }
+        },
+        {
+          "layer": 2,
+          "name": "enh2",
+          "delta_gaussians": 273031,
+          "cumulative_pct": 60.0,
+          "cumulative_gaussians": 819091,
+          "file": "layer_2_enh2_n273031.ply",
+          "size_bytes": 67713219,
+          "size_kb": 66126.19,
+          "cumulative_bytes": 203139161,
+          "cumulative_kb": 198378.09,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 541705.75,
+            "5Mbps_ms": 108341.15,
+            "10Mbps_ms": 54170.58,
+            "25Mbps_ms": 21668.23,
+            "50Mbps_ms": 10834.12,
+            "100Mbps_ms": 5417.06
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 1625113.29,
+            "5Mbps_ms": 325022.66,
+            "10Mbps_ms": 162511.33,
+            "25Mbps_ms": 65004.53,
+            "50Mbps_ms": 32502.27,
+            "100Mbps_ms": 16251.13
+          }
+        },
+        {
+          "layer": 3,
+          "name": "enh3",
+          "delta_gaussians": 273030,
+          "cumulative_pct": 80.0,
+          "cumulative_gaussians": 1092121,
+          "file": "layer_3_enh3_n273030.ply",
+          "size_bytes": 67712971,
+          "size_kb": 66125.95,
+          "cumulative_bytes": 270852132,
+          "cumulative_kb": 264504.04,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 541703.77,
+            "5Mbps_ms": 108340.75,
+            "10Mbps_ms": 54170.38,
+            "25Mbps_ms": 21668.15,
+            "50Mbps_ms": 10834.08,
+            "100Mbps_ms": 5417.04
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 2166817.06,
+            "5Mbps_ms": 433363.41,
+            "10Mbps_ms": 216681.71,
+            "25Mbps_ms": 86672.68,
+            "50Mbps_ms": 43336.34,
+            "100Mbps_ms": 21668.17
+          }
+        },
+        {
+          "layer": 4,
+          "name": "enh4",
+          "delta_gaussians": 273030,
+          "cumulative_pct": 100.0,
+          "cumulative_gaussians": 1365151,
+          "file": "layer_4_enh4_n273030.ply",
+          "size_bytes": 67712971,
+          "size_kb": 66125.95,
+          "cumulative_bytes": 338565103,
+          "cumulative_kb": 330629.98,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 541703.77,
+            "5Mbps_ms": 108340.75,
+            "10Mbps_ms": 54170.38,
+            "25Mbps_ms": 21668.15,
+            "50Mbps_ms": 10834.08,
+            "100Mbps_ms": 5417.04
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 2708520.82,
+            "5Mbps_ms": 541704.16,
+            "10Mbps_ms": 270852.08,
+            "25Mbps_ms": 108340.83,
+            "50Mbps_ms": 54170.42,
+            "100Mbps_ms": 27085.21
+          }
+        }
+      ],
+      "full_file": "full_n1365151.ply",
+      "total_bytes": 338565103,
+      "total_kb": 330629.98,
+      "bytes_per_gaussian": 248.01,
+      "note": "All layers contain the same NUMBER of gaussians per slice (determined by --layer_percentages), and each 3DGS gaussian is a fixed-size 62-float row, so the layer .ply byte sizes are nearly identical regardless of --layer_rank. The rank method changes WHICH gaussians go in WHICH layer, not how many bytes each layer takes. To get different sizes per layer, use non-uniform percentages e.g. '10,30,60,100'.",
+      "object_id": 0,
+      "object_class": "bicycle",
+      "dir_relative_to_outdir": "objects/obj_000_bicycle_n1365151"
+    },
+    {
+      "object": "bench_obj001",
+      "n_total": 446729,
+      "rank_method": "scale",
+      "layers": [
+        {
+          "layer": 0,
+          "name": "base",
+          "delta_gaussians": 89346,
+          "cumulative_pct": 20.0,
+          "cumulative_gaussians": 89346,
+          "file": "layer_0_base_n89346.ply",
+          "size_bytes": 22159338,
+          "size_kb": 21639.98,
+          "cumulative_bytes": 22159338,
+          "cumulative_kb": 21639.98,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 177274.7,
+            "5Mbps_ms": 35454.94,
+            "10Mbps_ms": 17727.47,
+            "25Mbps_ms": 7090.99,
+            "50Mbps_ms": 3545.49,
+            "100Mbps_ms": 1772.75
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 177274.7,
+            "5Mbps_ms": 35454.94,
+            "10Mbps_ms": 17727.47,
+            "25Mbps_ms": 7090.99,
+            "50Mbps_ms": 3545.49,
+            "100Mbps_ms": 1772.75
+          }
+        },
+        {
+          "layer": 1,
+          "name": "enh1",
+          "delta_gaussians": 89346,
+          "cumulative_pct": 40.0,
+          "cumulative_gaussians": 178692,
+          "file": "layer_1_enh1_n89346.ply",
+          "size_bytes": 22159338,
+          "size_kb": 21639.98,
+          "cumulative_bytes": 44318676,
+          "cumulative_kb": 43279.96,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 177274.7,
+            "5Mbps_ms": 35454.94,
+            "10Mbps_ms": 17727.47,
+            "25Mbps_ms": 7090.99,
+            "50Mbps_ms": 3545.49,
+            "100Mbps_ms": 1772.75
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 354549.41,
+            "5Mbps_ms": 70909.88,
+            "10Mbps_ms": 35454.94,
+            "25Mbps_ms": 14181.98,
+            "50Mbps_ms": 7090.99,
+            "100Mbps_ms": 3545.49
+          }
+        },
+        {
+          "layer": 2,
+          "name": "enh2",
+          "delta_gaussians": 89345,
+          "cumulative_pct": 60.0,
+          "cumulative_gaussians": 268037,
+          "file": "layer_2_enh2_n89345.ply",
+          "size_bytes": 22159090,
+          "size_kb": 21639.74,
+          "cumulative_bytes": 66477766,
+          "cumulative_kb": 64919.69,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 177272.72,
+            "5Mbps_ms": 35454.54,
+            "10Mbps_ms": 17727.27,
+            "25Mbps_ms": 7090.91,
+            "50Mbps_ms": 3545.45,
+            "100Mbps_ms": 1772.73
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 531822.13,
+            "5Mbps_ms": 106364.43,
+            "10Mbps_ms": 53182.21,
+            "25Mbps_ms": 21272.89,
+            "50Mbps_ms": 10636.44,
+            "100Mbps_ms": 5318.22
+          }
+        },
+        {
+          "layer": 3,
+          "name": "enh3",
+          "delta_gaussians": 89346,
+          "cumulative_pct": 80.0,
+          "cumulative_gaussians": 357383,
+          "file": "layer_3_enh3_n89346.ply",
+          "size_bytes": 22159338,
+          "size_kb": 21639.98,
+          "cumulative_bytes": 88637104,
+          "cumulative_kb": 86559.67,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 177274.7,
+            "5Mbps_ms": 35454.94,
+            "10Mbps_ms": 17727.47,
+            "25Mbps_ms": 7090.99,
+            "50Mbps_ms": 3545.49,
+            "100Mbps_ms": 1772.75
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 709096.83,
+            "5Mbps_ms": 141819.37,
+            "10Mbps_ms": 70909.68,
+            "25Mbps_ms": 28363.87,
+            "50Mbps_ms": 14181.94,
+            "100Mbps_ms": 7090.97
+          }
+        },
+        {
+          "layer": 4,
+          "name": "enh4",
+          "delta_gaussians": 89346,
+          "cumulative_pct": 100.0,
+          "cumulative_gaussians": 446729,
+          "file": "layer_4_enh4_n89346.ply",
+          "size_bytes": 22159338,
+          "size_kb": 21639.98,
+          "cumulative_bytes": 110796442,
+          "cumulative_kb": 108199.65,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 177274.7,
+            "5Mbps_ms": 35454.94,
+            "10Mbps_ms": 17727.47,
+            "25Mbps_ms": 7090.99,
+            "50Mbps_ms": 3545.49,
+            "100Mbps_ms": 1772.75
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 886371.54,
+            "5Mbps_ms": 177274.31,
+            "10Mbps_ms": 88637.15,
+            "25Mbps_ms": 35454.86,
+            "50Mbps_ms": 17727.43,
+            "100Mbps_ms": 8863.72
+          }
+        }
+      ],
+      "full_file": "full_n446729.ply",
+      "total_bytes": 110796442,
+      "total_kb": 108199.65,
+      "bytes_per_gaussian": 248.02,
+      "note": "All layers contain the same NUMBER of gaussians per slice (determined by --layer_percentages), and each 3DGS gaussian is a fixed-size 62-float row, so the layer .ply byte sizes are nearly identical regardless of --layer_rank. The rank method changes WHICH gaussians go in WHICH layer, not how many bytes each layer takes. To get different sizes per layer, use non-uniform percentages e.g. '10,30,60,100'.",
+      "object_id": 1,
+      "object_class": "bench",
+      "dir_relative_to_outdir": "objects/obj_001_bench_n446729"
+    },
+    {
+      "object": "other",
+      "n_total": 4680044,
+      "rank_method": "scale",
+      "layers": [
+        {
+          "layer": 0,
+          "name": "base",
+          "delta_gaussians": 936009,
+          "cumulative_pct": 20.0,
+          "cumulative_gaussians": 936009,
+          "file": "layer_0_base_n936009.ply",
+          "size_bytes": 232131763,
+          "size_kb": 226691.17,
+          "cumulative_bytes": 232131763,
+          "cumulative_kb": 226691.17,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 1857054.1,
+            "5Mbps_ms": 371410.82,
+            "10Mbps_ms": 185705.41,
+            "25Mbps_ms": 74282.16,
+            "50Mbps_ms": 37141.08,
+            "100Mbps_ms": 18570.54
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 1857054.1,
+            "5Mbps_ms": 371410.82,
+            "10Mbps_ms": 185705.41,
+            "25Mbps_ms": 74282.16,
+            "50Mbps_ms": 37141.08,
+            "100Mbps_ms": 18570.54
+          }
+        },
+        {
+          "layer": 1,
+          "name": "enh1",
+          "delta_gaussians": 936009,
+          "cumulative_pct": 40.0,
+          "cumulative_gaussians": 1872018,
+          "file": "layer_1_enh1_n936009.ply",
+          "size_bytes": 232131763,
+          "size_kb": 226691.17,
+          "cumulative_bytes": 464263526,
+          "cumulative_kb": 453382.35,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 1857054.1,
+            "5Mbps_ms": 371410.82,
+            "10Mbps_ms": 185705.41,
+            "25Mbps_ms": 74282.16,
+            "50Mbps_ms": 37141.08,
+            "100Mbps_ms": 18570.54
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 3714108.21,
+            "5Mbps_ms": 742821.64,
+            "10Mbps_ms": 371410.82,
+            "25Mbps_ms": 148564.33,
+            "50Mbps_ms": 74282.16,
+            "100Mbps_ms": 37141.08
+          }
+        },
+        {
+          "layer": 2,
+          "name": "enh2",
+          "delta_gaussians": 936008,
+          "cumulative_pct": 60.0,
+          "cumulative_gaussians": 2808026,
+          "file": "layer_2_enh2_n936008.ply",
+          "size_bytes": 232131515,
+          "size_kb": 226690.93,
+          "cumulative_bytes": 696395041,
+          "cumulative_kb": 680073.28,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 1857052.12,
+            "5Mbps_ms": 371410.42,
+            "10Mbps_ms": 185705.21,
+            "25Mbps_ms": 74282.08,
+            "50Mbps_ms": 37141.04,
+            "100Mbps_ms": 18570.52
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 5571160.33,
+            "5Mbps_ms": 1114232.07,
+            "10Mbps_ms": 557116.03,
+            "25Mbps_ms": 222846.41,
+            "50Mbps_ms": 111423.21,
+            "100Mbps_ms": 55711.6
+          }
+        },
+        {
+          "layer": 3,
+          "name": "enh3",
+          "delta_gaussians": 936009,
+          "cumulative_pct": 80.0,
+          "cumulative_gaussians": 3744035,
+          "file": "layer_3_enh3_n936009.ply",
+          "size_bytes": 232131763,
+          "size_kb": 226691.17,
+          "cumulative_bytes": 928526804,
+          "cumulative_kb": 906764.46,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 1857054.1,
+            "5Mbps_ms": 371410.82,
+            "10Mbps_ms": 185705.41,
+            "25Mbps_ms": 74282.16,
+            "50Mbps_ms": 37141.08,
+            "100Mbps_ms": 18570.54
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 7428214.43,
+            "5Mbps_ms": 1485642.89,
+            "10Mbps_ms": 742821.44,
+            "25Mbps_ms": 297128.58,
+            "50Mbps_ms": 148564.29,
+            "100Mbps_ms": 74282.14
+          }
+        },
+        {
+          "layer": 4,
+          "name": "enh4",
+          "delta_gaussians": 936009,
+          "cumulative_pct": 100.0,
+          "cumulative_gaussians": 4680044,
+          "file": "layer_4_enh4_n936009.ply",
+          "size_bytes": 232131763,
+          "size_kb": 226691.17,
+          "cumulative_bytes": 1160658567,
+          "cumulative_kb": 1133455.63,
+          "gaussians_per_kb": 4.13,
+          "download_delta": {
+            "1Mbps_ms": 1857054.1,
+            "5Mbps_ms": 371410.82,
+            "10Mbps_ms": 185705.41,
+            "25Mbps_ms": 74282.16,
+            "50Mbps_ms": 37141.08,
+            "100Mbps_ms": 18570.54
+          },
+          "download_cumulative": {
+            "1Mbps_ms": 9285268.54,
+            "5Mbps_ms": 1857053.71,
+            "10Mbps_ms": 928526.85,
+            "25Mbps_ms": 371410.74,
+            "50Mbps_ms": 185705.37,
+            "100Mbps_ms": 92852.69
+          }
+        }
+      ],
+      "full_file": "full_n4680044.ply",
+      "total_bytes": 1160658567,
+      "total_kb": 1133455.63,
+      "bytes_per_gaussian": 248.0,
+      "note": "All layers contain the same NUMBER of gaussians per slice (determined by --layer_percentages), and each 3DGS gaussian is a fixed-size 62-float row, so the layer .ply byte sizes are nearly identical regardless of --layer_rank. The rank method changes WHICH gaussians go in WHICH layer, not how many bytes each layer takes. To get different sizes per layer, use non-uniform percentages e.g. '10,30,60,100'.",
+      "object_id": -1,
+      "object_class": "other",
+      "dir_relative_to_outdir": "objects/other_n4680044"
+    }
+  ],
+  "clustering": {
+    "enabled": true,
+    "method": "dbscan",
+    "eps": 2.4356872558593747,
+    "n_clusters": 2,
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "label": "bench_bicycle",
+        "object_ids": [
+          0,
+          1
+        ],
+        "object_classes": [
+          "bicycle",
+          "bench"
+        ],
+        "n_gaussians": 1451910,
+        "total_bytes": 360081335,
+        "dir_relative": "clusters/cluster_000_bench_bicycle_n1451910",
+        "layers": [
+          {
+            "layer": 0,
+            "name": "base",
+            "delta_gaussians": 290382,
+            "cumulative_pct": 20.0,
+            "cumulative_gaussians": 290382,
+            "file": "layer_0_base_n290382.ply",
+            "size_bytes": 72016267,
+            "size_kb": 70328.39,
+            "cumulative_bytes": 72016267,
+            "cumulative_kb": 70328.39,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 576130.14,
+              "5Mbps_ms": 115226.03,
+              "10Mbps_ms": 57613.01,
+              "25Mbps_ms": 23045.21,
+              "50Mbps_ms": 11522.6,
+              "100Mbps_ms": 5761.3
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 576130.14,
+              "5Mbps_ms": 115226.03,
+              "10Mbps_ms": 57613.01,
+              "25Mbps_ms": 23045.21,
+              "50Mbps_ms": 11522.6,
+              "100Mbps_ms": 5761.3
+            }
+          },
+          {
+            "layer": 1,
+            "name": "enh1",
+            "delta_gaussians": 290382,
+            "cumulative_pct": 40.0,
+            "cumulative_gaussians": 580764,
+            "file": "layer_1_enh1_n290382.ply",
+            "size_bytes": 72016267,
+            "size_kb": 70328.39,
+            "cumulative_bytes": 144032534,
+            "cumulative_kb": 140656.77,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 576130.14,
+              "5Mbps_ms": 115226.03,
+              "10Mbps_ms": 57613.01,
+              "25Mbps_ms": 23045.21,
+              "50Mbps_ms": 11522.6,
+              "100Mbps_ms": 5761.3
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 1152260.27,
+              "5Mbps_ms": 230452.05,
+              "10Mbps_ms": 115226.03,
+              "25Mbps_ms": 46090.41,
+              "50Mbps_ms": 23045.21,
+              "100Mbps_ms": 11522.6
+            }
+          },
+          {
+            "layer": 2,
+            "name": "enh2",
+            "delta_gaussians": 290382,
+            "cumulative_pct": 60.0,
+            "cumulative_gaussians": 871146,
+            "file": "layer_2_enh2_n290382.ply",
+            "size_bytes": 72016267,
+            "size_kb": 70328.39,
+            "cumulative_bytes": 216048801,
+            "cumulative_kb": 210985.16,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 576130.14,
+              "5Mbps_ms": 115226.03,
+              "10Mbps_ms": 57613.01,
+              "25Mbps_ms": 23045.21,
+              "50Mbps_ms": 11522.6,
+              "100Mbps_ms": 5761.3
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 1728390.41,
+              "5Mbps_ms": 345678.08,
+              "10Mbps_ms": 172839.04,
+              "25Mbps_ms": 69135.62,
+              "50Mbps_ms": 34567.81,
+              "100Mbps_ms": 17283.9
+            }
+          },
+          {
+            "layer": 3,
+            "name": "enh3",
+            "delta_gaussians": 290382,
+            "cumulative_pct": 80.0,
+            "cumulative_gaussians": 1161528,
+            "file": "layer_3_enh3_n290382.ply",
+            "size_bytes": 72016267,
+            "size_kb": 70328.39,
+            "cumulative_bytes": 288065068,
+            "cumulative_kb": 281313.54,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 576130.14,
+              "5Mbps_ms": 115226.03,
+              "10Mbps_ms": 57613.01,
+              "25Mbps_ms": 23045.21,
+              "50Mbps_ms": 11522.6,
+              "100Mbps_ms": 5761.3
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 2304520.54,
+              "5Mbps_ms": 460904.11,
+              "10Mbps_ms": 230452.05,
+              "25Mbps_ms": 92180.82,
+              "50Mbps_ms": 46090.41,
+              "100Mbps_ms": 23045.21
+            }
+          },
+          {
+            "layer": 4,
+            "name": "enh4",
+            "delta_gaussians": 290382,
+            "cumulative_pct": 100.0,
+            "cumulative_gaussians": 1451910,
+            "file": "layer_4_enh4_n290382.ply",
+            "size_bytes": 72016267,
+            "size_kb": 70328.39,
+            "cumulative_bytes": 360081335,
+            "cumulative_kb": 351641.93,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 576130.14,
+              "5Mbps_ms": 115226.03,
+              "10Mbps_ms": 57613.01,
+              "25Mbps_ms": 23045.21,
+              "50Mbps_ms": 11522.6,
+              "100Mbps_ms": 5761.3
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 2880650.68,
+              "5Mbps_ms": 576130.14,
+              "10Mbps_ms": 288065.07,
+              "25Mbps_ms": 115226.03,
+              "50Mbps_ms": 57613.01,
+              "100Mbps_ms": 28806.51
+            }
+          }
+        ]
+      },
+      {
+        "cluster_id": 1,
+        "label": "other",
+        "object_ids": [],
+        "object_classes": [
+          "other"
+        ],
+        "n_gaussians": 4680044,
+        "total_bytes": 1160658567,
+        "dir_relative": "clusters/cluster_001_other_n4680044",
+        "layers": [
+          {
+            "layer": 0,
+            "name": "base",
+            "delta_gaussians": 936009,
+            "cumulative_pct": 20.0,
+            "cumulative_gaussians": 936009,
+            "file": "layer_0_base_n936009.ply",
+            "size_bytes": 232131763,
+            "size_kb": 226691.17,
+            "cumulative_bytes": 232131763,
+            "cumulative_kb": 226691.17,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 1857054.1,
+              "5Mbps_ms": 371410.82,
+              "10Mbps_ms": 185705.41,
+              "25Mbps_ms": 74282.16,
+              "50Mbps_ms": 37141.08,
+              "100Mbps_ms": 18570.54
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 1857054.1,
+              "5Mbps_ms": 371410.82,
+              "10Mbps_ms": 185705.41,
+              "25Mbps_ms": 74282.16,
+              "50Mbps_ms": 37141.08,
+              "100Mbps_ms": 18570.54
+            }
+          },
+          {
+            "layer": 1,
+            "name": "enh1",
+            "delta_gaussians": 936009,
+            "cumulative_pct": 40.0,
+            "cumulative_gaussians": 1872018,
+            "file": "layer_1_enh1_n936009.ply",
+            "size_bytes": 232131763,
+            "size_kb": 226691.17,
+            "cumulative_bytes": 464263526,
+            "cumulative_kb": 453382.35,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 1857054.1,
+              "5Mbps_ms": 371410.82,
+              "10Mbps_ms": 185705.41,
+              "25Mbps_ms": 74282.16,
+              "50Mbps_ms": 37141.08,
+              "100Mbps_ms": 18570.54
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 3714108.21,
+              "5Mbps_ms": 742821.64,
+              "10Mbps_ms": 371410.82,
+              "25Mbps_ms": 148564.33,
+              "50Mbps_ms": 74282.16,
+              "100Mbps_ms": 37141.08
+            }
+          },
+          {
+            "layer": 2,
+            "name": "enh2",
+            "delta_gaussians": 936008,
+            "cumulative_pct": 60.0,
+            "cumulative_gaussians": 2808026,
+            "file": "layer_2_enh2_n936008.ply",
+            "size_bytes": 232131515,
+            "size_kb": 226690.93,
+            "cumulative_bytes": 696395041,
+            "cumulative_kb": 680073.28,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 1857052.12,
+              "5Mbps_ms": 371410.42,
+              "10Mbps_ms": 185705.21,
+              "25Mbps_ms": 74282.08,
+              "50Mbps_ms": 37141.04,
+              "100Mbps_ms": 18570.52
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 5571160.33,
+              "5Mbps_ms": 1114232.07,
+              "10Mbps_ms": 557116.03,
+              "25Mbps_ms": 222846.41,
+              "50Mbps_ms": 111423.21,
+              "100Mbps_ms": 55711.6
+            }
+          },
+          {
+            "layer": 3,
+            "name": "enh3",
+            "delta_gaussians": 936009,
+            "cumulative_pct": 80.0,
+            "cumulative_gaussians": 3744035,
+            "file": "layer_3_enh3_n936009.ply",
+            "size_bytes": 232131763,
+            "size_kb": 226691.17,
+            "cumulative_bytes": 928526804,
+            "cumulative_kb": 906764.46,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 1857054.1,
+              "5Mbps_ms": 371410.82,
+              "10Mbps_ms": 185705.41,
+              "25Mbps_ms": 74282.16,
+              "50Mbps_ms": 37141.08,
+              "100Mbps_ms": 18570.54
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 7428214.43,
+              "5Mbps_ms": 1485642.89,
+              "10Mbps_ms": 742821.44,
+              "25Mbps_ms": 297128.58,
+              "50Mbps_ms": 148564.29,
+              "100Mbps_ms": 74282.14
+            }
+          },
+          {
+            "layer": 4,
+            "name": "enh4",
+            "delta_gaussians": 936009,
+            "cumulative_pct": 100.0,
+            "cumulative_gaussians": 4680044,
+            "file": "layer_4_enh4_n936009.ply",
+            "size_bytes": 232131763,
+            "size_kb": 226691.17,
+            "cumulative_bytes": 1160658567,
+            "cumulative_kb": 1133455.63,
+            "gaussians_per_kb": 4.13,
+            "download_delta": {
+              "1Mbps_ms": 1857054.1,
+              "5Mbps_ms": 371410.82,
+              "10Mbps_ms": 185705.41,
+              "25Mbps_ms": 74282.16,
+              "50Mbps_ms": 37141.08,
+              "100Mbps_ms": 18570.54
+            },
+            "download_cumulative": {
+              "1Mbps_ms": 9285268.54,
+              "5Mbps_ms": 1857053.71,
+              "10Mbps_ms": 928526.85,
+              "25Mbps_ms": 371410.74,
+              "50Mbps_ms": 185705.37,
+              "100Mbps_ms": 92852.69
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
