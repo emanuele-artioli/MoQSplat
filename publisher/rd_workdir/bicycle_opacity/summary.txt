@@ -1,0 +1,47 @@
+input: ../GaussianAdaptiveStreamer/static/models/bicycle/Bicycle.ply
+camera_json: ../GaussianAdaptiveStreamer/TestMovements/NTHU/bicycle/user1_bicycle.json
+detector: yolo    model: yolo26x.pt
+gaussians: 6,131,954
+views: 8
+  view 00 (v00_az+000_el+00_lat+0.00): 0 detections []
+  view 01 (v01_az+045_el+00_lat+0.00): 1 detections [bicycle]
+  view 02 (v02_az+090_el+00_lat+0.00): 1 detections [bicycle]
+  view 03 (v03_az+135_el+00_lat+0.00): 1 detections [bench]
+  view 04 (v04_az+180_el+00_lat+0.00): 1 detections [bench]
+  view 05 (v05_az-135_el+00_lat+0.00): 1 detections [bench]
+  view 06 (v06_az-090_el+00_lat+0.00): 1 detections [bench]
+  view 07 (v07_az-045_el+00_lat+0.00): 1 detections [bench]
+
+objects (after cross-view merge): 2
+  obj 000 class=bicycle        merged_from= 2_detections centroid=[0.6660000085830688, 1.3350000381469727, 0.24899999797344208] seed=1,248,688 +dilated=116,463 final=1,365,151 r=1.000 extent=7.448
+  obj 001 class=bench          merged_from= 5_detections centroid=[0.07400000095367432, 1.1490000486373901, 0.8019999861717224] seed=411,656 +dilated=35,073 final=446,729 r=1.000 extent=5.751
+
+other (unassigned): 4,680,044 gaussians (76.3% of scene)
+mask_pad: 2.0
+depth_band_frac: 1.0
+dilate_radius_frac: 0.1
+dilate_radius_abs: 1.0
+
+progressive layers (rank='opacity', pct=[20.0, 40.0, 60.0, 80.0, 100.0]):
+  bicycle        (n=1,365,151):
+    layer 0 (base ): +273,030 gaussians  (cum=273,030 = 20.0%)  66125.9 KB  -> layer_0_base_n273030.ply
+    layer 1 (enh1 ): +273,030 gaussians  (cum=546,060 = 40.0%)  66125.9 KB  -> layer_1_enh1_n273030.ply
+    layer 2 (enh2 ): +273,031 gaussians  (cum=819,091 = 60.0%)  66126.2 KB  -> layer_2_enh2_n273031.ply
+    layer 3 (enh3 ): +273,030 gaussians  (cum=1,092,121 = 80.0%)  66125.9 KB  -> layer_3_enh3_n273030.ply
+    layer 4 (enh4 ): +273,030 gaussians  (cum=1,365,151 = 100.0%)  66125.9 KB  -> layer_4_enh4_n273030.ply
+  bench          (n=446,729):
+    layer 0 (base ): +89,346 gaussians  (cum=89,346 = 20.0%)  21640.0 KB  -> layer_0_base_n89346.ply
+    layer 1 (enh1 ): +89,346 gaussians  (cum=178,692 = 40.0%)  21640.0 KB  -> layer_1_enh1_n89346.ply
+    layer 2 (enh2 ): +89,345 gaussians  (cum=268,037 = 60.0%)  21639.7 KB  -> layer_2_enh2_n89345.ply
+    layer 3 (enh3 ): +89,346 gaussians  (cum=357,383 = 80.0%)  21640.0 KB  -> layer_3_enh3_n89346.ply
+    layer 4 (enh4 ): +89,346 gaussians  (cum=446,729 = 100.0%)  21640.0 KB  -> layer_4_enh4_n89346.ply
+  other          (n=4,680,044):
+    layer 0 (base ): +936,009 gaussians  (cum=936,009 = 20.0%)  226691.2 KB  -> layer_0_base_n936009.ply
+    layer 1 (enh1 ): +936,009 gaussians  (cum=1,872,018 = 40.0%)  226691.2 KB  -> layer_1_enh1_n936009.ply
+    layer 2 (enh2 ): +936,008 gaussians  (cum=2,808,026 = 60.0%)  226690.9 KB  -> layer_2_enh2_n936008.ply
+    layer 3 (enh3 ): +936,009 gaussians  (cum=3,744,035 = 80.0%)  226691.2 KB  -> layer_3_enh3_n936009.ply
+    layer 4 (enh4 ): +936,009 gaussians  (cum=4,680,044 = 100.0%)  226691.2 KB  -> layer_4_enh4_n936009.ply
+
+clusters (method='dbscan'):
+  cluster 000 [bench_bicycle] n_objects=2 gaussians=1,451,910 total=351641.9 KB members=['bicycle', 'bench']
+  cluster 001 [other] n_objects=0 gaussians=4,680,044 total=1133455.6 KB members=['other']
