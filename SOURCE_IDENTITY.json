@@ -19,7 +19,7 @@
     "src/moq3dgs/render/cache.py": "89b52558187f3d1784881fda75569a713a6ed2b179428b9e5ad34a9bc3012f3d",
     "src/moq3dgs/render/__init__.py": "332626bf2d3dcf1f2051044cf0077d7b0681c0cb44337d186bfd4b32e9264787",
     "src/moq3dgs/render/writer.py": "c2d9adc04c5fcf7e7f4306bf03917afcfc92f67b848ef3234aea64fa56798f0f",
-    "src/moq3dgs/render/rasterizer.py": "36f09cce0285fe0fe2589f99dd3c2c4a0dfa7f8d722385a5688657879ddedca8",
+    "src/moq3dgs/render/rasterizer.py": "e827d0cfe9e094984aee6cc60418cf9f22e36ababae272cedb48bdfeb91cdca7",
     "src/moq3dgs/scene/clustering.py": "294e926bc914befd1f85244883a46cc08706381587354a309174f328fdf0a1fa",
     "src/moq3dgs/scene/fps.py": "07887356edaea893a042961c334fb90cc1635c97f3b96fb507ea6fb156fd584e",
     "src/moq3dgs/scene/__init__.py": "a4511b13650c3fb97eec057a25aeb91d58215cca2a28b1c3a5950edf8a90e308",
@@ -31,7 +31,7 @@
     "tests/test_priority.py": "5c255109dc83eebd03ad353ba29b2e447ce3a9e8957baa4edd46dea321edc9ac",
     "tests/__init__.py": "4cc9901e9f1f6cca03578de7747761bf5dc164e031e736c13ce10a1c88921990",
     "tests/test_manifest.py": "6eefdf917f9bccdca6eb63649713135c24a75d0c6e401bfabf75a6061484c05b",
-    "tests/test_camera_rendering.py": "d9f383b99fef6146c4f29fc8a4cc6e1430894bad81a129ca62d138dbc606a016",
+    "tests/test_camera_rendering.py": "9b1db944e7ca68dd3aaf30228d266e4c08ed7831cf1268482c34eb6b268952a4",
     "tests/test_offaxis_projection.py": "633bb9387584b921683582e3d7f2cbf64702917bd4228b858749788be3e73358",
     "tests/test_transport.py": "c58606d162916f5d142f428ca31ab89c4ef07d9bb6561c74240b23c5b40de32e",
     "tests/test_trace_conversion.py": "3fd6b01d7e1f71eb08053ea4f39165d1fde00bf903f4088187ed9ec9a06796e4",
@@ -55,7 +55,7 @@
     "README.md": "537d39fd024a4a4b53279e246023590fd7e4b2e6d080bdfcd5b1fc69dc95ade9",
     "AGENTS.md": "4d03ef4388662adf2aac38941ac969ebcd286d7a83ad4ce465abe90846d0afe5",
     "REPRODUCTION.md": "a283fba7168aac4573a1ccaf3e67b0e25d575267c5efffc14965f5d0a65b9e92",
-    "REPRODUCTION_WORKLOG.md": "ab101fab59931124126b92b90d9f14c06482b029bf2fc7783dbb302967e53a6b",
+    "REPRODUCTION_WORKLOG.md": "93044f49f51ee27ef1f3cfda3f5f5d3c56aa59464aab2b2985f4dca692b7563d",
     "publisher/gsplat_clustering_vmaf.py": "df5af53461dcfc413bef6481204321089583caaa60d5c291024a5858230dde06"
   }
 }

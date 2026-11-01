@@ -139,10 +139,11 @@ def _render_gsplat(
         colors=coefficients, sh_degree=degree, viewmats=vm.unsqueeze(0),
         Ks=Ks,
         width=w, height=h,
-        backgrounds=bg.reshape(1, 3),
     )
-    rendered = outputs[0]  # (1, H, W, 3)
-    img = rendered[0].clamp(0, 1) * 255
+    rendered, alpha = outputs[:2]  # (1, H, W, 3), (1, H, W, 1)
+    # The pinned packed rasterizer rejects per-camera background tensors.
+    # Compose its premultiplied colors using the returned alpha instead.
+    img = (rendered[0] + (1 - alpha[0]) * bg.reshape(1, 1, 3)).clamp(0, 1) * 255
     return img.byte().cpu()
 
 
