@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "hosts": [
+    "gpu6"
+  ],
+  "gpu_models": [
+    "RTX 6000 Ada"
+  ],
+  "gpu_memory_mib": 12000,
+  "cpu_threads": 8,
+  "entrypoint": [
+    "-m",
+    "experiments.audit.moqsplat_reproduction"
+  ],
+  "arguments": [
+    "--source",
+    "{staged:source}",
+    "--scene",
+    "{staged:scene}",
+    "--trace",
+    "{staged:trace}",
+    "--python",
+    "/local/users/emanuele/moqsplat-reproduction-20261101/fast-env/bin/python",
+    "--frames",
+    "{frames}",
+    "--mode",
+    "combined"
+  ],
+  "scale": {
+    "frames": {
+      "smoke": 1,
+      "full": 3
+    }
+  },
+  "inputs": [
+    {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/corrected-inputs-v4.json",
+      "sha256": "6d891bbdad12cdd2fe0dd79ebf33ed60a71b39b846c52d03f86ae4a07e86395f"
+    }
+  ],
+  "staged_inputs": [
+    {
+      "name": "source",
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/native-source-v6.tar.gz",
+      "sha256": "d64052cbee3e821d6dc83fb0fd767f883ec119c358165ce9bb011706a108d2c8"
+    },
+    {
+      "name": "scene",
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle.ply",
+      "sha256": "64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227"
+    },
+    {
+      "name": "trace",
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle_trace_openxr_v1.json",
+      "sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499"
+    }
+  ],
+  "local_storage_gib": 8,
+  "smoke": {
+    "seconds": 600,
+    "representative_basis": "Full real Bicycle scene and real trace, CPU regressions, CUDA source rendering oracle, corrected legacy TCP client, and three-process native MoQ relay/publisher/subscriber with exact original-array hashes. Same combined production path in smoke/full; only real trace frame count increases from1to3. New local environment torch2.10+cu128/gsplat1.5.3 is independently qualified, no NFS smoke evidence reused. Corrected EyeNav scene-world trace from exact pinned rawCSV with all signed off-axis FOV angles; rawJSON from prior jobs is preserved and not reused. CUDA header/library target paths explicitly selected. Native schema-v2 bounded16MiB groups preserve fullscene arrays; actual >32MiB and33second idle QUIC recovery regressions passed locally."
+  },
+  "full": {
+    "seconds": 1200
+  },
+  "validator": [
+    "{python}",
+    "-m",
+    "experiments.audit.moqsplat_reproduction",
+    "--validate",
+    "--mode",
+    "combined"
+  ],
+  "validator_seconds": 60,
+  "required_commands": [
+    "nvidia-smi"
+  ],
+  "budget_seconds": 2400,
+  "deadline": "2026-11-01T17:03:27.185868+00:00",
+  "stall_seconds": 600,
+  "contention": {
+    "policy": "stop",
+    "resume_attempts": 0
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "comparison": "received-data CUDA render versus full-source CUDA render at identical corrected trace poses",
+  "observations": [
+    {
+      "frame": 0,
+      "shape": [
+        240,
+        320,
+        3
+      ],
+      "max_absolute_pixel_error": 1,
+      "mean_absolute_pixel_error": 4.340277777777778e-05,
+      "different_channels": 10,
+      "channels": 230400
+    },
+    {
+      "frame": 1,
+      "shape": [
+        240,
+        320,
+        3
+      ],
+      "max_absolute_pixel_error": 2,
+      "mean_absolute_pixel_error": 0.0001388888888888889,
+      "different_channels": 26,
+      "channels": 230400
+    },
+    {
+      "frame": 2,
+      "shape": [
+        240,
+        320,
+        3
+      ],
+      "max_absolute_pixel_error": 2,
+      "mean_absolute_pixel_error": 7.8125e-05,
+      "different_channels": 16,
+      "channels": 230400
+    }
+  ],
+  "note": "Gaussian ordering changes after opacity-layer partition; tiny floating-point/order differences are expected. This is numerical agreement, not pixel-identical PNGs."
+}

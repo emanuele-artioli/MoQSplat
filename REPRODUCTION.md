@@ -16,6 +16,11 @@ application `(track, group, subgroup)` to an independently subscribable native
 MoQ track. It must not be described as the original customized wire protocol or
 as an exact reproduction of the paper's end-to-end results.
 
+The repaired path passed full-scene GPU validation (6,131,954 Gaussians), real
+three-process QUIC delivery, and comparison against direct source rendering.
+See [the validation record](reproduction/VALIDATION-20261101.md) for exact
+inputs, code/environment identities, results, failed attempts and limits.
+
 ## Environment
 
 Use a separate environment; do not change another project's pinned installation.
