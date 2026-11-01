@@ -3,6 +3,11 @@
 Streams pre-trained 3D Gaussian Splatting scenes to clients over Media-over-QUIC
 (MoQ), with viewport-aware spatial partitioning and dynamic priority scheduling.
 
+**Reproduction status:** read [REPRODUCTION.md](REPRODUCTION.md) before running
+experiments. The legacy quick-start commands below use a TCP simulator. The
+native MoQ/QUIC path and original-publisher input bridge are provided separately;
+the paper's customized subgroup transport has not been recovered.
+
 ## Architecture
 
 ```

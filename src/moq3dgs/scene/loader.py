@@ -106,13 +106,18 @@ def load_ply(path: str | Path, max_sh_degree: int = 3) -> GaussianScene:
         [vertex["f_dc_0"], vertex["f_dc_1"], vertex["f_dc_2"]], axis=-1
     ).astype(np.float32).reshape(n, 1, 3)
 
-    extra_sh: list[np.ndarray] = []
-    for idx in range(num_sh_coeffs - 1):
-        col_name = f"f_rest_{idx}"
-        if col_name in vertex.data.dtype.names:
-            extra_sh.append(vertex[col_name].astype(np.float32))
-    if extra_sh:
-        sh_rest = np.stack(extra_sh, axis=-1).reshape(n, -1, 3)
+    # Standard 3DGS exports coefficients channel-major: R, then G, then B.
+    names = vertex.data.dtype.names or ()
+    indices = sorted(int(name[7:]) for name in names
+                     if name.startswith("f_rest_") and name[7:].isdigit())
+    if indices:
+        if indices != list(range(len(indices))) or len(indices) % 3:
+            raise ValueError("PLY f_rest properties must be contiguous and divisible by 3")
+        stored_per_channel = len(indices) // 3
+        keep = min(num_sh_coeffs - 1, stored_per_channel)
+        sh_rest = np.stack([vertex[f"f_rest_{idx}"].astype(np.float32)
+                            for idx in indices], axis=-1)
+        sh_rest = sh_rest.reshape(n, 3, stored_per_channel)[:, :, :keep].transpose(0, 2, 1).copy()
     else:
         sh_rest = np.zeros((n, 0, 3), dtype=np.float32)
 

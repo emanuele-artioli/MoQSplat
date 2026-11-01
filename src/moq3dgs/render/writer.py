@@ -46,8 +46,9 @@ class FrameWriter:
             )
             logger.debug("video_writer_initialized", path=str(self._video_path))
         except Exception as e:
-            logger.error("video_writer_init_failed", error=str(e))
-            self._writer = None
+            raise RuntimeError(
+                "Video output requires imageio[ffmpeg] and a working libx264 encoder"
+            ) from e
 
         # Start worker thread
         self._worker = threading.Thread(target=self._write_worker, daemon=True)
