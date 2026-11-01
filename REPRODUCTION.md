@@ -21,6 +21,27 @@ three-process QUIC delivery, and comparison against direct source rendering.
 See [the validation record](reproduction/VALIDATION-20261101.md) for exact
 inputs, code/environment identities, results, failed attempts and limits.
 
+## Current native client capabilities
+
+The native CLI is a transport/rendering correctness harness. It saves progressive
+and final PNG snapshots; it does not provide an interactive browser/VR viewer or
+a continuously paced playback loop. It requests every catalog layer. The trace
+changes active stream priorities, but does not restrict fetching to the current
+viewport. This distinction matters when evaluating bandwidth savings.
+
+Completed payloads are cached in process RAM. Connection reconnection and
+GPU/RAM watermark swapping are absent. A connection interruption can fail the
+session; layer retries only apply while a usable connection remains. The 1 GiB
+per-layer and 4 GiB aggregate payload guards are not peak-memory guarantees:
+serialization, decoded arrays and rendering tensors can require additional RAM.
+
+Validation covered one scene on one GPU class, short loopback sessions and
+sequential subscribers. Continuous playback, WAN loss/congestion, simultaneous
+audiences, long sessions and a clean-machine installation are not qualified.
+The original semantic publisher-to-native-client path still needs a successful
+run with complete original publisher artifacts; its bridge guards alone do not
+establish that end-to-end compatibility.
+
 ## Environment
 
 Use a separate environment; do not change another project's pinned installation.

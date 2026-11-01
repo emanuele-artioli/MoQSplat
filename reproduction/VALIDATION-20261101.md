@@ -116,6 +116,15 @@ the logs, execution/validation JSON, environment freeze and archive together.
 
 ## Remaining limits
 
+The native runner is a finite snapshot-producing harness, not a qualified
+interactive viewer. It requests all catalog layers and changes their priorities;
+viewport-selective fetching, continuous playback and automatic reconnection are
+absent. Cache revisits concern this process's RAM cache. Payload-budget guards
+do not bound peak RAM/VRAM. Short loopback runs with sequential subscribers do
+not qualify WAN behavior, concurrent audiences or long-session cache behavior.
+The tested environment inherited an existing local base; a fresh installation
+on an independent machine has not been exercised.
+
 The offline publisher wrapper and prepared DELTA-PLY bridge have regression
 tests; the semantic detection/VMAF pipeline has not been rerun. Original binary
 publisher artifacts, network-impairment commands, session configuration and
