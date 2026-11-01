@@ -1,0 +1,73 @@
+{
+  "manifest": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/corrected-inputs-v4.json",
+  "manifest_sha256": "6d891bbdad12cdd2fe0dd79ebf33ed60a71b39b846c52d03f86ae4a07e86395f",
+  "trace": {
+    "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle_trace_openxr_v1.json",
+    "sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499",
+    "bytes": 2280100,
+    "frames": 2893,
+    "first": {
+      "timestamp_ms": 0,
+      "camera_position": [
+        -2.033,
+        -0.206,
+        -0.335
+      ],
+      "view_matrix": [
+        [
+          0.5797626535916471,
+          -0.13364760848542911,
+          0.8037497012419337,
+          1.420382217319868
+        ],
+        [
+          0.4541442618950713,
+          -0.7660076822074198,
+          -0.4549562838196632,
+          0.6130673468183643
+        ],
+        [
+          0.6764822650211557,
+          0.6287849771943843,
+          -0.3834073519985041,
+          1.3763766871705538
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "fov": 95.97043068441288,
+      "fov_angles": [
+        -0.942,
+        0.698,
+        -0.942,
+        0.733
+      ]
+    },
+    "source_csv": {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/user101_bicycle.csv",
+      "sha256": "779a6597c9e9f6fbe2c44533195f0cd43a2aa929b450e8c4ad354472679b1f85"
+    },
+    "metadata": {
+      "source_csv": "/home/itec/emanuele/Datasets/EyeNavGS_Rutgers_Dataset/dataset/bicycle/user101_bicycle.csv",
+      "source_csv_sha256": "779a6597c9e9f6fbe2c44533195f0cd43a2aa929b450e8c4ad354472679b1f85",
+      "eyenav_software_commit": "88cbd793e806e1a9ae23fa7d5b93d3b3b3ac78d2",
+      "eyenav_dataset_commit": "7f264fda0223cbc74e191f115ef9fd3b580d8cf4",
+      "quaternion_order": "xyzw",
+      "camera_basis": "OpenXR/OpenGL: +X right, +Y up, -Z forward",
+      "world_basis": "scene world = diag(1,-1,-1) @ recorded OpenXR world",
+      "selected_eye": 0,
+      "fov_angle_order": [
+        "left",
+        "right",
+        "down",
+        "up"
+      ],
+      "fov_angles_units": "radians, signed",
+      "asymmetric_projection": "per-frame signed angles preserved in fov_angles"
+    }
+  }
+}

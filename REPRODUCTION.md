@@ -19,16 +19,26 @@ as an exact reproduction of the paper's end-to-end results.
 ## Environment
 
 Use a separate environment; do not change another project's pinned installation.
-The original `environment.yaml` bootstraps Python 3.10, PyTorch 2.5.1 and CUDA 12.1.
-Then install this checkout and the pinned reproduction extras:
+The original `environment.yaml` describes Python 3.10, PyTorch 2.5.1 and CUDA 12.1;
+that historical combination has not been requalified here. The real-scene repair
+was tested separately with Python 3.12.14, PyTorch 2.10.0+cu128, gsplat 1.5.3
+and an RTX 6000 Ada (compute capability 8.9). Select a compatible CUDA compiler
+and headers explicitly before installing this checkout and its reproduction extras:
 
 ```sh
-conda env create -f environment.yaml
-conda activate 3dgs_moq
+# Activate an isolated Python environment with the recorded Torch/CUDA build.
 python -m pip install -e '.[dev,reproduce]'
 python -m pip freeze --all > environment-resolved.txt
 python -m pytest tests -q
 ```
+
+For a Conda CUDA toolkit whose headers live under `targets/x86_64-linux`, set
+`CUDA_HOME`, prepend `$CUDA_HOME/bin` to `PATH`, and add its target `include` and
+`lib` directories to `CPATH` and `LIBRARY_PATH`. Keep `TORCH_EXTENSIONS_DIR` on
+local storage. The recorded GPU run used CUDA compiler 12.4.131 with the above
+Torch binary; this establishes that tested configuration only. The renderer
+composes the returned premultiplied RGB and alpha with the background because
+the pinned gsplat packed wrapper rejects an explicit background tensor.
 
 The native bindings are pinned together: `moq-rs==0.5.2`,
 `moq-ffi==0.4.20`; the renderer is `gsplat==1.5.3`. Moving-main documentation
@@ -71,6 +81,11 @@ The original recording binary's revision is unknown; the software revision in
 converted metadata identifies the reference semantics audited here. The pinned
 CSV's full Git blob and SHA256 were checked, not just its first row.
 
+The corrected trace/input identities and historical identities are saved
+separately under `reproduction/`. Use `corrected-input-identities-20261101.json`
+for the repaired EyeNav conversion; the earlier identity file describes the
+preserved historical trace.
+
 ## Validate the renderer before streaming
 
 ```sh
@@ -112,6 +127,14 @@ separate process. Validation against the standalone `moq-relay` executable is a
 separate interoperability test. WebSocket fallback and client reconnection are
 disabled. The relay rejects non-QUIC connections; the subscriber records native
 QUIC counters rather than inferring transport from a URL or class name.
+
+The pinned library caps each transport group at 32 MiB. Schema v2 splits each
+complete application layer into consecutive groups of at most 16 MiB; receivers
+verify sequence, completeness and the complete-layer hash before caching it.
+Publisher, subscriber and relay origins have explicit 4 GiB cache capacities.
+An actual QUIC regression verified exact recovery by a second subscriber after
+33 seconds idle. The library's separate idle-cache expiry is not configurable
+through this pinned FFI; this test does not establish indefinite relay retention.
 
 The publisher's `--scene` mode forms five disjoint 20% opacity/scale layers in
 one group. This validates transport on the real scene; it does not replace the

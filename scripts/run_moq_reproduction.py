@@ -17,6 +17,7 @@ import time
 from pathlib import Path
 
 from moq3dgs.transport.moq_backend import (
+    ORIGIN_CACHE_BYTES,
     PRIORITY_POLICY,
     VERSIONS,
     Layer,
@@ -40,7 +41,13 @@ def digest(path: str) -> str:
 async def relay(args):
     moq = native_module()
     sessions = []
-    async with moq.Server(args.bind, tls_generate=["localhost"]) as server:
+    origin = moq.OriginProducer(cache_capacity_bytes=ORIGIN_CACHE_BYTES)
+    async with moq.Server(
+        args.bind,
+        tls_generate=["localhost"],
+        publish=origin,
+        subscribe=origin,
+    ) as server:
         print(
             json.dumps(
                 {
@@ -333,7 +340,9 @@ async def subscribe(args):
             view = torch.tensor(pose["view_matrix"], dtype=torch.float32)
             projection = torch.from_numpy(
                 projection_matrix_from_fov(
-                    pose["fov"], args.width / args.height, fov_angles=pose.get("fov_angles"),
+                    pose["fov"],
+                    args.width / args.height,
+                    fov_angles=pose.get("fov_angles"),
                 )
             ).float()
             image = render_gaussians(

@@ -1,6 +1,6 @@
 """Modern MoQ functional reproduction, not the paper's recovered subgroup wire format.
 
-One application layer is one native MoQ track and one finite QUIC group. The
+One application layer is one native MoQ track with bounded finite QUIC groups. The
 application hierarchy remains explicit in the authenticated catalog and hashes.
 Only moq-rs 0.5.2 / moq-ffi 0.4.20 are supported: moving-main APIs differ.
 """
@@ -18,7 +18,14 @@ from urllib.parse import urlparse
 
 VERSIONS = {"moq-rs": "0.5.2", "moq-ffi": "0.4.20"}
 CATALOG = "moqsplat/catalog"
-SCHEMA = "moqsplat-modern-layer-tracks-v1"
+SCHEMA = "moqsplat-modern-layer-tracks-v2"
+# moq-net's pinned native implementation hard-caps a group at 32 MiB/8192 frames.
+# FFI offers no override. Keep payloads intact by splitting transport groups.
+TRANSPORT_GROUP_BYTES = 16 << 20
+ORIGIN_CACHE_BYTES = 4 << 30
+# The pinned FFI cannot override the origin pool's separate 30-second idle expiry.
+# A long media window prevents timeline eviction; it does not promise permanent cache.
+PUBLISHER_MAX_AGE_US = 86_400_000_000
 PRIORITY_POLICY = {
     "distance_weight": 0.5,
     "angle_weight": 0.5,
@@ -79,11 +86,14 @@ def quic_client(url: str, *, tls_verify: bool = True) -> Any:
     """Disable transport fallback and reconnect so failures remain observable."""
     if urlparse(url).scheme != "https":
         raise ValueError("native MoQ requires an https QUIC/WebTransport relay URL")
-    return native_module().Client(
+    moq = native_module()
+    return moq.Client(
         url,
         tls_verify=tls_verify,
         websocket_enabled=False,
         reconnect=False,
+        publish=moq.OriginProducer(cache_capacity_bytes=ORIGIN_CACHE_BYTES),
+        subscribe=moq.OriginProducer(cache_capacity_bytes=ORIGIN_CACHE_BYTES),
     )
 
 
@@ -134,6 +144,10 @@ class Layer:
     def name(self) -> str:
         return f"layers/{self.track}/{self.group}/{self.subgroup}"
 
+    @property
+    def transport_groups(self) -> int:
+        return max(1, (self.size + TRANSPORT_GROUP_BYTES - 1) // TRANSPORT_GROUP_BYTES)
+
     @classmethod
     def from_payload(
         cls, track: str, group: int, subgroup: int, payload: bytes, priority: int
@@ -150,13 +164,13 @@ class Layer:
             raise ValueError(f"incomplete or corrupted layer: {self.name}")
 
 
-def subscription(priority: int) -> Any:
+def subscription(priority: int, group_count: int = 1) -> Any:
     """Pinned FFI is unsigned higher-first: shift signed native order by 128."""
     return native_module().Subscription(
         priority=native_priority(priority) + 128,
         max_age_us=86_400_000_000,
         group_start=0,
-        group_end=1,
+        group_end=group_count,
     )
 
 
@@ -168,8 +182,8 @@ def publish_layers(
     chunk_size: int = 65536,
 ) -> tuple[dict[str, Any], list[Any]]:
     """Retain finite groups so late subscribers can recover static scene layers."""
-    if chunk_size <= 0:
-        raise ValueError("chunk_size must be positive")
+    if not 2048 <= chunk_size <= TRANSPORT_GROUP_BYTES:
+        raise ValueError("chunk_size must fit the native 8192-frame/32-MiB group budget")
     if len({layer.name for layer, _ in layers}) != len(layers):
         raise ValueError("duplicate layer identity")
     moq = native_module()
@@ -177,6 +191,7 @@ def publish_layers(
         "schema": SCHEMA,
         "versions": VERSIONS,
         "metadata": metadata,
+        "transport_group_bytes": TRANSPORT_GROUP_BYTES,
         "layers": [asdict(layer) for layer, _ in layers],
     }
     handles = []
@@ -190,13 +205,15 @@ def publish_layers(
             name,
             moq.TrackInfo(
                 priority=native_priority(priority) + 128,
-                max_age_us=None,
+                max_age_us=PUBLISHER_MAX_AGE_US,
             ),
         )
-        group = track.append_group()
-        for offset in range(0, len(payload), chunk_size):
-            group.write_frame(payload[offset : offset + chunk_size])
-        group.finish()
+        for start in range(0, max(1, len(payload)), TRANSPORT_GROUP_BYTES):
+            group = track.append_group()
+            stop = min(start + TRANSPORT_GROUP_BYTES, len(payload))
+            for offset in range(start, stop, chunk_size):
+                group.write_frame(payload[offset : min(offset + chunk_size, stop)])
+            group.finish()
         handles.append(track)
     broadcast.announce()
     return manifest, handles
@@ -236,18 +253,32 @@ class LayerReceiver:
         self.pending.clear()
 
     async def _read(self, name: str, priority: int, limit: int) -> bytes:
-        track = await self.broadcast.subscribe_track(name, subscription(priority))
+        group_count = max(1, (limit + TRANSPORT_GROUP_BYTES - 1) // TRANSPORT_GROUP_BYTES)
+        track = await self.broadcast.subscribe_track(name, subscription(priority, group_count))
         self.active[name] = track
         try:
             chunks = []
             size = 0
+            expected_sequence = 0
             async for group in track:
+                if group.sequence != expected_sequence:
+                    raise ValueError(f"missing/out-of-order transport group for {name}")
+                group_size = 0
                 async for frame in group:
                     size += len(frame.payload)
+                    group_size += len(frame.payload)
                     if size > limit:
                         raise ValueError(f"payload exceeds declared limit: {name}")
+                    if group_size > TRANSPORT_GROUP_BYTES:
+                        raise ValueError(f"transport group exceeds budget: {name}")
                     chunks.append(frame.payload)
-                break  # Static layer tracks contain exactly one complete group.
+                expected_sequence += 1
+                if expected_sequence < group_count and group_size != TRANSPORT_GROUP_BYTES:
+                    raise ValueError(f"partial non-final transport group for {name}")
+                if expected_sequence == group_count:
+                    break
+            if expected_sequence != group_count:
+                raise ValueError(f"incomplete transport group range for {name}")
             return b"".join(chunks)
         finally:
             self.active.pop(name, None)
@@ -258,6 +289,8 @@ class LayerReceiver:
         result = json.loads(raw)
         if result.get("schema") != SCHEMA:
             raise ValueError("unsupported MoQSplat manifest schema")
+        if result.get("transport_group_bytes") != TRANSPORT_GROUP_BYTES:
+            raise ValueError("unsupported transport group segmentation")
         entries = result.get("layers", [])
         if not entries or len(entries) > 10000:
             raise ValueError("catalog layer count outside 1..10000")
@@ -272,7 +305,7 @@ class LayerReceiver:
         return result
 
     def update(self, layer: Layer, priority: int) -> bool:
-        preferences = subscription(priority)
+        preferences = subscription(priority, layer.transport_groups)
         track = self.active.get(layer.name)
         if track is None:
             return False
