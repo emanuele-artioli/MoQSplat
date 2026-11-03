@@ -1,0 +1,79 @@
+{
+  "publish/constrained-0/frames.jsonl": {
+    "row_count": 418,
+    "frames_reserved_over_budget": 0,
+    "max_reserved_budget_ratio": 0.9908854166666666,
+    "first_frame": {
+      "seconds": 4.894620453007519,
+      "cuda_reserved_bytes": 27262976,
+      "cuda_peak_allocated_bytes": 19541504,
+      "cuda_attempt_peak_allocated_bytes": 19541504,
+      "gpu_budget_bytes": 6442450944,
+      "nonblack_pixels": 6958
+    },
+    "minimum_budget_frame": {
+      "seconds": 5.019176322966814,
+      "cuda_reserved_bytes": 75497472,
+      "cuda_peak_allocated_bytes": 44626432,
+      "cuda_attempt_peak_allocated_bytes": 44626432,
+      "gpu_budget_bytes": 1610612736,
+      "nonblack_pixels": 6409
+    }
+  },
+  "publish/direct-0/frames.jsonl": {
+    "row_count": 436,
+    "frames_reserved_over_budget": 0,
+    "max_reserved_budget_ratio": 1.0,
+    "first_frame": {
+      "seconds": 1.5364539921283722,
+      "cuda_reserved_bytes": 27262976,
+      "cuda_peak_allocated_bytes": 19349504,
+      "cuda_attempt_peak_allocated_bytes": 19349504,
+      "gpu_budget_bytes": 6442450944,
+      "nonblack_pixels": 9855
+    },
+    "minimum_budget_frame": {
+      "seconds": 24.45227246079594,
+      "cuda_reserved_bytes": 1606418432,
+      "cuda_peak_allocated_bytes": 1162171904,
+      "cuda_attempt_peak_allocated_bytes": 1237010944,
+      "gpu_budget_bytes": 1610612736,
+      "nonblack_pixels": 76800
+    }
+  },
+  "publish/recovery-soak-0/frames.jsonl": {
+    "row_count": 1039,
+    "frames_reserved_over_budget": 0,
+    "max_reserved_budget_ratio": 0.9983723958333334,
+    "first_frame": {
+      "seconds": 2.0310824820771813,
+      "cuda_reserved_bytes": 27262976,
+      "cuda_peak_allocated_bytes": 19390976,
+      "cuda_attempt_peak_allocated_bytes": 19390976,
+      "gpu_budget_bytes": 6442450944,
+      "nonblack_pixels": 11230
+    },
+    "minimum_budget_frame": {
+      "seconds": 2.226403510197997,
+      "cuda_reserved_bytes": 79691776,
+      "cuda_peak_allocated_bytes": 57625088,
+      "cuda_attempt_peak_allocated_bytes": 57625088,
+      "gpu_budget_bytes": 1610612736,
+      "nonblack_pixels": 24210
+    },
+    "black_frames": {
+      "count": 30,
+      "first_seconds": 10.554690684191883,
+      "last_seconds": 12.989017593674362,
+      "first_nonblack_seconds": 2.0310824820771813,
+      "after_first_nonblack_count": 30,
+      "after_first_nonblack_ranges": [
+        {
+          "first_seconds": 10.554690684191883,
+          "last_seconds": 12.989017593674362,
+          "frames": 30
+        }
+      ]
+    }
+  }
+}

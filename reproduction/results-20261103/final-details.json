@@ -1,0 +1,454 @@
+{
+  "smoke": {
+    "clients_summary": [
+      {
+        "viewer_held_frames": 0,
+        "cache_revisit_requests": null,
+        "max_frame_interval_ms": 165.715123526752,
+        "rendered_interval_fps": 11.879592821086069
+      },
+      {
+        "viewer_held_frames": 0,
+        "cache_revisit_requests": null,
+        "max_frame_interval_ms": 121.65196426212788,
+        "rendered_interval_fps": 11.888896596973117
+      }
+    ],
+    "journals": {
+      "publish/constrained-0/frames.jsonl": {
+        "sha256": "2c32d3b06ac98e3748cc5ecd466f5c15afcae2b6cb1db481123a47ad6df5a688",
+        "frames": 419,
+        "first_seconds": 4.790469192899764,
+        "last_seconds": 39.97686036769301,
+        "render_thread_ids": [
+          "127391858935360"
+        ],
+        "received_layers_first": 1,
+        "received_layers_last": 128,
+        "received_layers_max": 128,
+        "total_layers": 640,
+        "reconnects": 0,
+        "evictions": 0,
+        "promotions": 128,
+        "cache_revisit_requests": null,
+        "max_cuda_peak_allocated_bytes": 1002668032,
+        "max_cuda_attempt_peak_allocated_bytes": 1002668032,
+        "max_cuda_reserved_bytes": 6337593344,
+        "max_rss_bytes": 1434324992,
+        "over_budget_allocated_frames": 0,
+        "over_budget_attempt_frames": 0,
+        "over_budget_reserved_frames": 0,
+        "over_budget_resident_frames": 0,
+        "nonblack_frames": 419,
+        "rawblack_intervals": [],
+        "display_held_previous_frames": 0,
+        "viewer_held_frames_max": 0,
+        "displayed_frame_age_ms_max": 0,
+        "input_to_render_ms_samples": [
+          108.12505427747965,
+          34.133851528167725,
+          67.63485074043274
+        ],
+        "available_keys": [
+          "budget_adjustment_retries",
+          "camera_position",
+          "cpu_cache_bytes",
+          "cuda_attempt_peak_allocated_bytes",
+          "cuda_peak_allocated_bytes",
+          "cuda_reserved_bytes",
+          "display_held_previous",
+          "displayed_camera_position",
+          "displayed_frame_age_ms",
+          "estimated_peak_bytes",
+          "evictions",
+          "frame_ms",
+          "gpu_budget_bytes",
+          "gpu_high_watermark_bytes",
+          "gpu_low_watermark_bytes",
+          "gpu_resident_bytes",
+          "input_events",
+          "input_to_render_ms",
+          "nonblack_pixels",
+          "priority_updates",
+          "process_peak_rss_bytes",
+          "promotions",
+          "received_layers",
+          "reconnects",
+          "render_thread_id",
+          "resident_layers",
+          "seconds",
+          "selected_layer_ids",
+          "splat_count",
+          "total_layers",
+          "viewer_held_frames"
+        ],
+        "first_nonblack_seconds": 4.790469192899764,
+        "max_frame_interval_ms": 165.715123526752,
+        "rendered_interval_fps": 11.879592821086069
+      },
+      "publish/constrained-1/frames.jsonl": {
+        "sha256": "5562437d83885dc81bb7b017187ec05ff657b0e931a186923d46bd3a3ccd096c",
+        "frames": 411,
+        "first_seconds": 5.509372729808092,
+        "last_seconds": 39.99533167947084,
+        "render_thread_ids": [
+          "125633386501696"
+        ],
+        "received_layers_first": 1,
+        "received_layers_last": 89,
+        "received_layers_max": 89,
+        "total_layers": 640,
+        "reconnects": 0,
+        "evictions": 0,
+        "promotions": 89,
+        "cache_revisit_requests": null,
+        "max_cuda_peak_allocated_bytes": 717454336,
+        "max_cuda_attempt_peak_allocated_bytes": 717454336,
+        "max_cuda_reserved_bytes": 6190792704,
+        "max_rss_bytes": 1344958464,
+        "over_budget_allocated_frames": 0,
+        "over_budget_attempt_frames": 0,
+        "over_budget_reserved_frames": 0,
+        "over_budget_resident_frames": 0,
+        "nonblack_frames": 411,
+        "rawblack_intervals": [],
+        "display_held_previous_frames": 0,
+        "viewer_held_frames_max": 0,
+        "displayed_frame_age_ms_max": 0,
+        "input_to_render_ms_samples": [
+          108.57727378606796,
+          36.61303501576185,
+          99.88911543041468,
+          73.0951763689518
+        ],
+        "available_keys": [
+          "budget_adjustment_retries",
+          "camera_position",
+          "cpu_cache_bytes",
+          "cuda_attempt_peak_allocated_bytes",
+          "cuda_peak_allocated_bytes",
+          "cuda_reserved_bytes",
+          "display_held_previous",
+          "displayed_camera_position",
+          "displayed_frame_age_ms",
+          "estimated_peak_bytes",
+          "evictions",
+          "frame_ms",
+          "gpu_budget_bytes",
+          "gpu_high_watermark_bytes",
+          "gpu_low_watermark_bytes",
+          "gpu_resident_bytes",
+          "input_events",
+          "input_to_render_ms",
+          "nonblack_pixels",
+          "priority_updates",
+          "process_peak_rss_bytes",
+          "promotions",
+          "received_layers",
+          "reconnects",
+          "render_thread_id",
+          "resident_layers",
+          "seconds",
+          "selected_layer_ids",
+          "splat_count",
+          "total_layers",
+          "viewer_held_frames"
+        ],
+        "first_nonblack_seconds": 5.509372729808092,
+        "max_frame_interval_ms": 121.65196426212788,
+        "rendered_interval_fps": 11.888896596973117
+      }
+    },
+    "inputs": [
+      {
+        "name": "source",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/source-last.tar.gz",
+        "sha256": "8b6b4c31ef22705184960c66ac9081d76cea6aa87564d4ae2686254bdce94375",
+        "extract": false,
+        "mode": "local-copy",
+        "path": "/local/users/emanuele/pointstream/cache/8b6b4c31ef22705184960c66ac9081d76cea6aa87564d4ae2686254bdce94375/source-last.tar.gz",
+        "seconds": 0.0027141571044921875
+      },
+      {
+        "name": "scene",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle.ply",
+        "sha256": "64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227/bicycle.ply",
+        "seconds": 1.007307529449463
+      },
+      {
+        "name": "trace",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle_trace_openxr_v1.json",
+        "sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499/bicycle_trace_openxr_v1.json",
+        "seconds": 0.0021834373474121094
+      },
+      {
+        "name": "publisher_camera",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/publisher-camera.json",
+        "sha256": "bffcecf53b8e1cc6d88ea0773ed26444744ed6f0ef63b69eb39fdc738b809906",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/bffcecf53b8e1cc6d88ea0773ed26444744ed6f0ef63b69eb39fdc738b809906/publisher-camera.json",
+        "seconds": 5.364418029785156e-05
+      },
+      {
+        "name": "prior",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/jobs/fleet/inbox/20261103T154539Z-3d7be786/smoke/summary.json",
+        "sha256": "40bd034989e9d980c68925b769be3b42faba5a071b9544a3db1979222adc2ae2",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/40bd034989e9d980c68925b769be3b42faba5a071b9544a3db1979222adc2ae2/summary.json",
+        "seconds": 0.00012636184692382812
+      }
+    ],
+    "published": {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/jobs/fleet/inbox/20261103T162943Z-5642b945/smoke/published.tar",
+      "sha256": "6a899f06b763f0ff2e07d572f667137f3b23c4e1a54cbb0e5493896a2b9b3b97",
+      "bytes": 499322880,
+      "members": 243,
+      "partial": false
+    }
+  },
+  "full": {
+    "clients_summary": [
+      {
+        "viewer_held_frames": 45,
+        "cache_revisit_requests": 0,
+        "max_frame_interval_ms": 2369.918449781835,
+        "rendered_interval_fps": 11.162965375951853
+      },
+      {
+        "viewer_held_frames": 36,
+        "cache_revisit_requests": 0,
+        "max_frame_interval_ms": 2391.494009643793,
+        "rendered_interval_fps": 11.211871333257953
+      }
+    ],
+    "journals": {
+      "publish/recovery-soak-0/frames.jsonl": {
+        "sha256": "28fce1d5830ecd0709a896d2dbc39590bdd4fef36b8aeffd42d5b2de3b84df35",
+        "frames": 1989,
+        "first_seconds": 1.9519964214414358,
+        "last_seconds": 180.04087630659342,
+        "render_thread_ids": [
+          "131363093071424"
+        ],
+        "received_layers_first": 1,
+        "received_layers_last": 640,
+        "received_layers_max": 640,
+        "total_layers": 640,
+        "reconnects": 1,
+        "evictions": 589,
+        "promotions": 1229,
+        "cache_revisit_requests": null,
+        "max_cuda_peak_allocated_bytes": 4518917120,
+        "max_cuda_attempt_peak_allocated_bytes": 4518917120,
+        "max_cuda_reserved_bytes": 6434062336,
+        "max_rss_bytes": 1575116800,
+        "over_budget_allocated_frames": 0,
+        "over_budget_attempt_frames": 0,
+        "over_budget_reserved_frames": 0,
+        "over_budget_resident_frames": 0,
+        "nonblack_frames": 1944,
+        "rawblack_intervals": [
+          {
+            "first": 11.541592174209654,
+            "last": 14.148850494995713,
+            "count": 32
+          },
+          {
+            "first": 14.31866616755724,
+            "last": 15.314312851056457,
+            "count": 13
+          }
+        ],
+        "display_held_previous_frames": 45,
+        "viewer_held_frames_max": 45,
+        "displayed_frame_age_ms_max": 2699.92755074054,
+        "input_to_render_ms_samples": [
+          91.25437214970589,
+          45.47156486660242,
+          107.29945171624422
+        ],
+        "available_keys": [
+          "budget_adjustment_retries",
+          "camera_position",
+          "cpu_cache_bytes",
+          "cuda_attempt_peak_allocated_bytes",
+          "cuda_peak_allocated_bytes",
+          "cuda_reserved_bytes",
+          "display_held_previous",
+          "displayed_camera_position",
+          "displayed_frame_age_ms",
+          "estimated_peak_bytes",
+          "evictions",
+          "frame_ms",
+          "gpu_budget_bytes",
+          "gpu_high_watermark_bytes",
+          "gpu_low_watermark_bytes",
+          "gpu_resident_bytes",
+          "input_events",
+          "input_to_render_ms",
+          "nonblack_pixels",
+          "priority_updates",
+          "process_peak_rss_bytes",
+          "promotions",
+          "received_layers",
+          "reconnects",
+          "render_thread_id",
+          "resident_layers",
+          "seconds",
+          "selected_layer_ids",
+          "splat_count",
+          "total_layers",
+          "viewer_held_frames"
+        ],
+        "first_nonblack_seconds": 1.9519964214414358,
+        "max_frame_interval_ms": 2369.918449781835,
+        "rendered_interval_fps": 11.162965375951853
+      },
+      "publish/recovery-soak-1/frames.jsonl": {
+        "sha256": "b38d3dd149fd95f04063e2f702cd8cc6007dcdc6e636773dc5e301a02993740d",
+        "frames": 1993,
+        "first_seconds": 2.3581243380904198,
+        "last_seconds": 180.02694881800562,
+        "render_thread_ids": [
+          "132726954907200"
+        ],
+        "received_layers_first": 1,
+        "received_layers_last": 640,
+        "received_layers_max": 640,
+        "total_layers": 640,
+        "reconnects": 1,
+        "evictions": 593,
+        "promotions": 1233,
+        "cache_revisit_requests": null,
+        "max_cuda_peak_allocated_bytes": 4518937088,
+        "max_cuda_attempt_peak_allocated_bytes": 4518937088,
+        "max_cuda_reserved_bytes": 6417285120,
+        "max_rss_bytes": 1576402944,
+        "over_budget_allocated_frames": 0,
+        "over_budget_attempt_frames": 0,
+        "over_budget_reserved_frames": 0,
+        "over_budget_resident_frames": 0,
+        "nonblack_frames": 1957,
+        "rawblack_intervals": [
+          {
+            "first": 10.547126602381468,
+            "last": 13.498323254287243,
+            "count": 36
+          }
+        ],
+        "display_held_previous_frames": 36,
+        "viewer_held_frames_max": 36,
+        "displayed_frame_age_ms_max": 3043.4382064267993,
+        "input_to_render_ms_samples": [
+          56.834751740098,
+          63.391814939677715,
+          41.33012052625418
+        ],
+        "available_keys": [
+          "budget_adjustment_retries",
+          "camera_position",
+          "cpu_cache_bytes",
+          "cuda_attempt_peak_allocated_bytes",
+          "cuda_peak_allocated_bytes",
+          "cuda_reserved_bytes",
+          "display_held_previous",
+          "displayed_camera_position",
+          "displayed_frame_age_ms",
+          "estimated_peak_bytes",
+          "evictions",
+          "frame_ms",
+          "gpu_budget_bytes",
+          "gpu_high_watermark_bytes",
+          "gpu_low_watermark_bytes",
+          "gpu_resident_bytes",
+          "input_events",
+          "input_to_render_ms",
+          "nonblack_pixels",
+          "priority_updates",
+          "process_peak_rss_bytes",
+          "promotions",
+          "received_layers",
+          "reconnects",
+          "render_thread_id",
+          "resident_layers",
+          "seconds",
+          "selected_layer_ids",
+          "splat_count",
+          "total_layers",
+          "viewer_held_frames"
+        ],
+        "first_nonblack_seconds": 2.3581243380904198,
+        "max_frame_interval_ms": 2391.494009643793,
+        "rendered_interval_fps": 11.211871333257953
+      }
+    },
+    "inputs": [
+      {
+        "name": "source",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/source-last.tar.gz",
+        "sha256": "8b6b4c31ef22705184960c66ac9081d76cea6aa87564d4ae2686254bdce94375",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/8b6b4c31ef22705184960c66ac9081d76cea6aa87564d4ae2686254bdce94375/source-last.tar.gz",
+        "seconds": 0.0008475780487060547
+      },
+      {
+        "name": "scene",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle.ply",
+        "sha256": "64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227/bicycle.ply",
+        "seconds": 1.603569746017456
+      },
+      {
+        "name": "trace",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle_trace_openxr_v1.json",
+        "sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499/bicycle_trace_openxr_v1.json",
+        "seconds": 0.0021762847900390625
+      },
+      {
+        "name": "publisher_camera",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/publisher-camera.json",
+        "sha256": "bffcecf53b8e1cc6d88ea0773ed26444744ed6f0ef63b69eb39fdc738b809906",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/bffcecf53b8e1cc6d88ea0773ed26444744ed6f0ef63b69eb39fdc738b809906/publisher-camera.json",
+        "seconds": 5.221366882324219e-05
+      },
+      {
+        "name": "prior",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/jobs/fleet/inbox/20261103T154539Z-3d7be786/smoke/summary.json",
+        "sha256": "40bd034989e9d980c68925b769be3b42faba5a071b9544a3db1979222adc2ae2",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/40bd034989e9d980c68925b769be3b42faba5a071b9544a3db1979222adc2ae2/summary.json",
+        "seconds": 0.0018551349639892578
+      }
+    ],
+    "published": {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/jobs/fleet/inbox/20261103T162943Z-5642b945/full/published.tar",
+      "sha256": "c539e909b0ad8cc60a2afc6b59a3542e26ec3ee7e1580fe33dbb840feb2ab08c",
+      "bytes": 2967296000,
+      "members": 1306,
+      "partial": false
+    }
+  },
+  "libraries": [
+    {
+      "path": "/local/users/emanuele/moqsplat-gap-closure-20261101/clean-env/lib/python3.10/site-packages/moq_ffi/_uniffi/libmoq_ffi.so",
+      "sha256": "aa313c69b57e287234cd2d925bdeeaa27bdb9609c3bf6c059a9d5700f4b8a36a"
+    }
+  ]
+}

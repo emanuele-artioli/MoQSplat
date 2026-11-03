@@ -109,7 +109,11 @@ images; it does not turn a loopback MoQ connection into an internet MoQ test.
 GPU promotions/evictions, CPU cache size, measured CUDA allocation, controls
 and reconnections. `summary.json` reports first usable frame, frame intervals
 and control-receipt-to-render samples. That latency excludes browser/display
-time and is not motion-to-photon latency. Early black partial views are valid;
+time and is not motion-to-photon latency. If a partial render is black while
+data is still arriving, the viewer keeps its last useful JPEG and explicitly
+labels it as waiting. The recorded raw image remains black; displayed-pose,
+age and held-frame fields identify the stale image. Fully received empty
+views are displayed normally. Early black partial renders are possible;
 a nonblack source scene and enough useful coverage are needed for a visible image.
 
 ## Independent-network test
