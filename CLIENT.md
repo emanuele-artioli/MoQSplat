@@ -111,7 +111,9 @@ a nonblack source scene and enough useful coverage are needed for a visible imag
 
 First use the CPU-only checker on a separate Linux/macOS machine. The native
 wheel must be available for its architecture; CUDA is not required by this
-checker, although the current project installation includes Torch.
+checker. For the lightweight network-only path in a source checkout, install
+`numpy`, `moq-rs==0.5.2` and `moq-ffi==0.4.20`, and prefix the command with
+`PYTHONPATH=src`. The complete project installation also includes Torch.
 
 ```sh
 python scripts/check_moq_connection.py \
