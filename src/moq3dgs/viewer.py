@@ -118,6 +118,10 @@ class FrameHub:
         self.controller = controller
         self.condition = threading.Condition()
         self.jpeg = b""
+        self.useful_jpeg = None
+        self.useful_camera = None
+        self.useful_time = None
+        self.held_frames = 0
         self.sequence = 0
         self.status = {"state": "waiting for base layer"}
         self.pending_budget = None
@@ -127,12 +131,38 @@ class FrameHub:
         buffer = io.BytesIO()
         Image.fromarray(image).save(buffer, format="JPEG", quality=85)
         with self.condition:
-            self.jpeg = buffer.getvalue()
+            nonblack = bool(np.any(image))
+            incomplete = status.get("received_layers", 0) < status.get("total_layers", 0)
+            held = bool(not nonblack and incomplete and self.useful_jpeg is not None)
+            if nonblack:
+                self.useful_jpeg = buffer.getvalue()
+                self.useful_camera = status.get("camera_position")
+                self.useful_time = time.monotonic()
+            self.jpeg = self.useful_jpeg if held else buffer.getvalue()
+            self.held_frames += held
+            presentation = {
+                "display_held_previous": held,
+                "displayed_camera_position": self.useful_camera
+                if held
+                else status.get("camera_position"),
+                "displayed_frame_age_ms": (
+                    (time.monotonic() - self.useful_time) * 1000 if held else 0
+                ),
+                "viewer_held_frames": self.held_frames,
+            }
             self.sequence += 1
             self.status = dict(
-                status, frames=self.sequence, manual_controls=self.controller.input_events
+                status,
+                frames=self.sequence,
+                manual_controls=self.controller.input_events,
+                **presentation,
             )
+            if held:
+                self.status["state"] = (
+                    "Waiting for scene data for this view; showing the last useful frame."
+                )
             self.condition.notify_all()
+            return presentation
 
 
 def start_viewer(hub, port):

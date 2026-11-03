@@ -68,3 +68,46 @@ def test_spatial_groups_preserve_every_original_gaussian(count, maximum):
     groups = spatial_groups(means, maximum)
     assert all(0 < len(g) <= maximum for g in groups)
     np.testing.assert_array_equal(np.sort(np.concatenate(groups)), np.arange(count))
+
+
+def test_incomplete_black_view_holds_last_useful_image_with_explicit_status():
+    hub = FrameHub(PoseController(trace()))
+    useful = np.full((4, 4, 3), 90, dtype=np.uint8)
+    hub.publish(useful, {"received_layers": 1, "total_layers": 3, "camera_position": [0, 0, 0]})
+    previous = hub.jpeg
+    result = hub.publish(
+        np.zeros_like(useful),
+        {
+            "received_layers": 2,
+            "total_layers": 3,
+            "camera_position": [1, 0, 0],
+            "nonblack_pixels": 0,
+        },
+    )
+    assert hub.jpeg == previous
+    assert result["display_held_previous"]
+    assert result["displayed_camera_position"] == [0, 0, 0]
+    assert hub.status["camera_position"] == [1, 0, 0]
+    assert hub.status["nonblack_pixels"] == 0
+    assert "Waiting for scene data" in hub.status["state"]
+    assert result["viewer_held_frames"] == 1
+    # A fully received empty view is legitimate; it must not retain a stale pose.
+    result = hub.publish(np.zeros_like(useful), {"received_layers": 3, "total_layers": 3})
+    assert not result["display_held_previous"]
+    assert hub.jpeg != previous
+    assert "state" not in hub.status
+    hub.publish(useful, {"received_layers": 3, "total_layers": 3})
+    assert hub.jpeg == previous
+
+
+def test_no_useful_frame_is_not_reported_as_a_held_image():
+    hub = FrameHub(PoseController(trace()))
+    result = hub.publish(
+        np.zeros((4, 4, 3), dtype=np.uint8),
+        {
+            "received_layers": 1,
+            "total_layers": 3,
+        },
+    )
+    assert not result["display_held_previous"]
+    assert result["viewer_held_frames"] == 0

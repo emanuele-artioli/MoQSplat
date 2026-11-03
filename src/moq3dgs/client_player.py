@@ -210,9 +210,10 @@ async def play(args):
                                 * (1 if sys.platform == "darwin" else 1024)
                             ),
                         )
+                        presentation = await asyncio.to_thread(hub.publish, image, metrics)
+                        metrics.update(presentation)
                         telemetry.write(json.dumps(metrics) + "\n")
                         telemetry.flush()
-                        await asyncio.to_thread(hub.publish, image, metrics)
                         if frames <= 3:
                             Image.fromarray(image).save(output / f"frame-{frames:05d}.png")
                         last_metrics = metrics
@@ -237,6 +238,7 @@ async def play(args):
                 "mode": "continuous",
                 "frames_rendered": frames,
                 "nonblack_frames": nonblack_frames,
+                "viewer_held_frames": hub.held_frames,
                 "versions": VERSIONS,
                 "torch_version": str(torch.__version__),
                 "gpu": {
