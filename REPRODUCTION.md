@@ -23,24 +23,22 @@ inputs, code/environment identities, results, failed attempts and limits.
 
 ## Current native client capabilities
 
-The native CLI is a transport/rendering correctness harness. It saves progressive
-and final PNG snapshots; it does not provide an interactive browser/VR viewer or
-a continuously paced playback loop. It requests every catalog layer. The trace
-changes active stream priorities, but does not restrict fetching to the current
-viewport. This distinction matters when evaluating bandwidth savings.
+The finite native CLI remains a transport/rendering correctness harness.
+`subscribe --live` adds a continuous CUDA loop and local browser controls,
+streamed verified disk caching, bounded CPU/GPU residency and bounded subscriber
+reconnection. See [CLIENT.md](CLIENT.md) for commands, policy and remaining limits.
 
-Completed payloads are cached in process RAM. Connection reconnection and
-GPU/RAM watermark swapping are absent. A connection interruption can fail the
-session; layer retries only apply while a usable connection remains. The 1 GiB
-per-layer and 4 GiB aggregate payload guards are not peak-memory guarantees:
-serialization, decoded arrays and rendering tensors can require additional RAM.
+A saturated link is expected: the objective is useful viewport quality at the
+available bandwidth. The latest pose changes active priorities and the next
+tracks admitted. A static scene may eventually be received in full. Neither
+this behavior nor a passing integrity test establishes quality superiority over
+another scheduling method at the same bandwidth.
 
-Validation covered one scene on one GPU class, short loopback sessions and
-sequential subscribers. Continuous playback, WAN loss/congestion, simultaneous
-audiences, long sessions and a clean-machine installation are not qualified.
-The original semantic publisher-to-native-client path still needs a successful
-run with complete original publisher artifacts; its bridge guards alone do not
-establish that end-to-end compatibility.
+The November 1 report applies to the historical finite harness: one scene/GPU
+class, short loopback sessions and sequential subscribers. New live-client,
+semantic-publisher and controlled-network qualification is recorded separately;
+implementation alone does not establish real WAN behavior, a fresh operating
+system installation or long-duration reliability.
 
 ## Environment
 
@@ -150,21 +148,25 @@ PYTHONPATH=src python scripts/run_moq_reproduction.py subscribe \
 
 The relay role uses the official Rust-backed `moq.Server` shared origin in a
 separate process. Validation against the standalone `moq-relay` executable is a
-separate interoperability test. WebSocket fallback and client reconnection are
-disabled. The relay rejects non-QUIC connections; the subscriber records native
+separate interoperability test. WebSocket fallback is disabled; subscriber
+reconnection and publisher SDK reannouncement are bounded. The relay rejects non-QUIC connections; the subscriber records native
 QUIC counters rather than inferring transport from a URL or class name.
 
 The pinned library caps each transport group at 32 MiB. Schema v2 splits each
 complete application layer into consecutive groups of at most 16 MiB; receivers
 verify sequence, completeness and the complete-layer hash before caching it.
-Publisher, subscriber and relay origins have explicit 4 GiB cache capacities.
+Publisher and relay origins have explicit 4 GiB cache capacities. The finite
+subscriber also uses 4 GiB; the live subscriber defaults to a 128 MiB target
+with admission credits and streamed disk completion. Active SDK overhead is
+excluded from that target.
 An actual QUIC regression verified exact recovery by a second subscriber after
 33 seconds idle. The library's separate idle-cache expiry is not configurable
 through this pinned FFI; this test does not establish indefinite relay retention.
 
-The publisher's `--scene` mode forms five disjoint 20% opacity/scale layers in
-one group. This validates transport on the real scene; it does not replace the
-original semantic grouping experiment. For original prepared groups, use the
+The publisher's `--scene` mode forms bounded spatial groups (65,536 Gaussians
+maximum by default), then five disjoint 20% opacity/scale layers within each.
+This preserves every original attribute; it does not replace the original
+semantic grouping experiment. For original prepared groups, use the
 bridge below.
 
 ## Connect the original publisher output
@@ -188,9 +190,11 @@ python scripts/run_publisher_reproduction.py \
   --output /absolute/path/new-publisher-run --cache /absolute/path/compiler-cache
 ```
 
-The wrapper's guards are tested; a new complete semantic-publisher/VMAF run has
-not been performed as part of the transport repair. Preserve the original
-publisher configuration to compare with its published figures.
+The wrapper records exact inputs, command and package versions. Preserve the
+original publisher configuration to compare with published figures; a new
+bounded functional configuration is not an exact historical reproduction.
+The new GPU qualification records successful and failed semantic/VMAF runs
+separately from the November 1 transport evidence.
 
 ```sh
 PYTHONPATH=src python scripts/run_moq_reproduction.py publish \
@@ -216,4 +220,6 @@ For an exact Table-I reproduction, the original network impairment commands,
 session duration, publisher artifacts and customized transport revision are
 still needed. A loopback QUIC test cannot reproduce a 10/30/50/100 Mbps network
 experiment, packet-loss behavior, relay scheduling or original timing by itself.
-GPU/RAM watermark behavior must be independently tested before claiming it.
+The live client implements CPU LRU and GPU watermark admission/eviction.
+Its actual device tests and memory scope must accompany any measured claim;
+driver allocations and temporary decode buffers are not whole-process caps.
