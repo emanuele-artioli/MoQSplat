@@ -13,6 +13,7 @@ import asyncio
 import hashlib
 import io
 import json
+import math
 import time
 from pathlib import Path
 
@@ -22,6 +23,7 @@ from moq3dgs.transport.moq_backend import (
     VERSIONS,
     Layer,
     LayerReceiver,
+    ReconnectingBroadcast,
     native_module,
     publish_layers,
     quic_client,
@@ -72,7 +74,7 @@ async def relay(args):
 
         try:
             await asyncio.wait_for(accept(), args.duration)
-        except TimeoutError:
+        except asyncio.TimeoutError:
             pass
         finally:
             for session in sessions:
@@ -85,7 +87,12 @@ async def publish(args):
         layers, metadata = load_prepared(args.prepared_manifest)
     else:
         layers, metadata = load_scene_layers(args)
-    async with quic_client(args.relay, tls_verify=not args.insecure) as client:
+    async with quic_client(
+        args.relay,
+        tls_verify=not args.insecure,
+        reconnect=True,
+        reconnect_timeout=args.reconnect_timeout,
+    ) as client:
         broadcast = client.create_broadcast(args.broadcast)
         manifest, handles = publish_layers(broadcast, layers, metadata=metadata)
         print(
@@ -208,6 +215,7 @@ def load_scene_layers(args):
     import numpy as np
 
     from moq3dgs.scene.loader import load_ply
+    from moq3dgs.scene.partition import spatial_groups
 
     scene = load_ply(args.scene)
     count = (
@@ -233,31 +241,41 @@ def load_scene_layers(args):
         if args.pruning == "opacity"
         else arrays["scales"].sum(axis=1)
     )
-    order = np.argsort(-score, kind="stable")
-    layers, array_hashes = [], {}
-    for index, indices in enumerate(np.array_split(order, 5)):
-        buffer = io.BytesIO()
-        original_arrays = {key: value[indices] for key, value in arrays.items()}
-        np.savez(buffer, **original_arrays)
-        payload = buffer.getvalue()
-        layers.append((Layer.from_payload("scene", 0, index, payload, index * 40), payload))
-        array_hashes[layers[-1][0].name] = array_evidence(original_arrays)
+    groups = spatial_groups(arrays["means"], args.group_splats)
+    layers, array_hashes, centroids = [], {}, {}
+    for group, members in enumerate(groups):
+        order = members[np.argsort(-score[members], kind="stable")]
+        centroids[f"scene/{group}"] = (
+            arrays["means"][members].mean(axis=0, dtype=np.float64).tolist()
+        )
+        for index, indices in enumerate(np.array_split(order, 5)):
+            buffer = io.BytesIO()
+            original_arrays = {key: value[indices] for key, value in arrays.items()}
+            np.savez(buffer, **original_arrays)
+            payload = buffer.getvalue()
+            layers.append((Layer.from_payload("scene", group, index, payload, index * 40), payload))
+            array_hashes[layers[-1][0].name] = array_evidence(original_arrays)
     metadata = {
         "scene_sha256": digest(args.scene),
         "scene_splats": scene.num_gaussians,
         "selected_splats": count,
         "pruning": args.pruning,
-        "grouping": "single group transport validation; semantic grouping not reproduced",
+        "grouping": "median spatial groups; original semantic grouping is separate",
+        "maximum_group_splats": args.group_splats,
         "attributes": "raw float32 npz containers",
         "sh_degree": 3,
         "source_array_hashes": array_hashes,
-        "group_centroids": {"scene/0": arrays["means"].mean(axis=0, dtype=np.float64).tolist()},
+        "group_centroids": centroids,
         "priority_policy": PRIORITY_POLICY,
     }
     return layers, metadata
 
 
 async def subscribe(args):
+    if args.live:
+        from moq3dgs.client_player import play
+
+        return await play(args)
     import numpy as np
     import torch
     from PIL import Image
@@ -282,11 +300,15 @@ async def subscribe(args):
             for pose in trace
         ]
     started = time.monotonic()
-    async with quic_client(args.relay, tls_verify=not args.insecure) as client:
-        remote = await asyncio.wait_for(
-            client.announced_broadcast(args.broadcast).available(), args.timeout
-        )
-        receiver = LayerReceiver(remote, timeout=args.timeout)
+    async with ReconnectingBroadcast(
+        args.relay,
+        args.broadcast,
+        tls_verify=not args.insecure,
+        timeout=args.timeout,
+        max_reconnects=args.reconnect_attempts,
+        cache_capacity_bytes=ORIGIN_CACHE_BYTES,
+    ) as connection:
+        receiver = LayerReceiver(connection, timeout=args.timeout)
         manifest = await receiver.catalog()
         for centroid in manifest["metadata"]["group_centroids"].values():
             if len(centroid) != 3 or not np.isfinite(centroid).all():
@@ -325,7 +347,7 @@ async def subscribe(args):
                         priority_counts["changed"] += 1
                 await asyncio.sleep(0.1)
 
-        def render_snapshot(selected, pose, filename):
+        def render_snapshot(selected, pose, filename, require_nonblack=True):
             # Called in a worker thread so QUIC reception/control continues on the loop.
             parts = {}
             for item in selected:
@@ -360,7 +382,7 @@ async def subscribe(args):
                 fov_angles=pose.get("fov_angles"),
                 device=args.device,
             ).numpy()
-            if not np.isfinite(image).all() or not np.any(image):
+            if not np.isfinite(image).all() or (require_nonblack and not np.any(image)):
                 raise RuntimeError(f"non-finite or black rendering: {filename}")
             Image.fromarray(image).save(output / filename)
             return {
@@ -413,6 +435,7 @@ async def subscribe(args):
                             eligible,
                             trace[0],
                             f"progressive-{len(progressive):05d}.png",
+                            False,
                         )
                         report.update(
                             {
@@ -442,7 +465,7 @@ async def subscribe(args):
         initial_requests = receiver.requests
         for layer in layers:
             await receiver.receive(layer)
-        stats = quic_stats(client)
+        stats = quic_stats(connection.client)
         frames = 0
         final_images = []
         for index, frame in enumerate(trace[: args.frames]):
@@ -463,7 +486,8 @@ async def subscribe(args):
             "progressive_images": progressive,
             "final_images": final_images,
             "progressive_rendering_overlapped_transfer": any(
-                item["transfers_pending_at_start"] > 0 for item in progressive
+                item["transfers_pending_at_start"] > 0 and item["nonblack_pixels"] > 0
+                for item in progressive
             ),
             "memory_policy": (
                 "verified completed payloads retained in RAM; GPU watermark swapping absent"
@@ -477,6 +501,7 @@ async def subscribe(args):
             "layers_received": len(layers),
             "payload_sha256": [item.sha256 for item in layers],
             "cache_revisit_requests": receiver.requests - initial_requests,
+            "reconnects": connection.reconnects,
             "priority_updates": priority_counts,
             "quic_stats": stats,
             "wall_seconds": time.monotonic() - started,
@@ -504,14 +529,60 @@ def main():
         "--max-splats", type=int, help="explicit smoke subset; default entire scene"
     )
     parser.add_argument("--pruning", choices=("opacity", "scale"), default="opacity")
+    parser.add_argument(
+        "--group-splats",
+        type=int,
+        default=65536,
+        help="maximum splats per spatial group before five quality layers",
+    )
     parser.add_argument("--frames", type=int, default=1)
     parser.add_argument("--width", type=int, default=640)
     parser.add_argument("--height", type=int, default=360)
     parser.add_argument("--device", default="cuda:0")
+    parser.add_argument("--live", action="store_true", help="continuous received-data rendering")
+    parser.add_argument("--viewer-port", type=int, help="local browser controls; 0 selects a port")
+    parser.add_argument("--cache", help="verified disk cache; reusable between live sessions")
+    parser.add_argument("--gpu-memory-mib", type=int, default=2048)
+    parser.add_argument("--cpu-cache-mib", type=int, default=128)
+    parser.add_argument("--native-cache-mib", type=int, default=128)
+    parser.add_argument("--parallel-downloads", type=int, default=4)
+    parser.add_argument(
+        "--max-scene-gib",
+        type=float,
+        default=4,
+        help="maximum complete cached payload size, not a RAM allocation",
+    )
+    parser.add_argument(
+        "--fps", type=float, default=20, help="target rate, not a performance promise"
+    )
+    parser.add_argument(
+        "--live-frames", type=int, default=0, help="optional continuous frame limit"
+    )
+    parser.add_argument("--reconnect-attempts", type=int, default=3)
+    parser.add_argument("--reconnect-timeout", type=float, default=30)
     parser.add_argument("--camera-convention", choices=("opengl", "opencv"), default="opengl")
     args = parser.parse_args()
+    if not all(
+        math.isfinite(v) and v > 0
+        for v in (args.duration, args.timeout, args.fps, args.reconnect_timeout, args.max_scene_gib)
+    ):
+        parser.error("duration, timeout, fps and cache limits must be finite and positive")
+    if (
+        args.parallel_downloads <= 0
+        or args.native_cache_mib <= 0
+        or args.gpu_memory_mib <= 0
+        or args.cpu_cache_mib < 0
+    ):
+        parser.error("positive transfer/GPU limits and nonnegative CPU cache required")
     if args.frames <= 0 or args.width <= 0 or args.height <= 0 or args.duration <= 0:
         parser.error("frames, image dimensions and duration must be positive")
+    if (
+        args.fps <= 0
+        or args.live_frames < 0
+        or args.reconnect_attempts < 0
+        or args.group_splats < 5
+    ):
+        parser.error("positive fps and nonnegative live frames/reconnect attempts required")
     if args.role == "publish" and bool(args.scene) == bool(args.prepared_manifest):
         parser.error("publish requires exactly one of --scene or --prepared-manifest")
     if args.prepared_manifest and args.max_splats is not None:

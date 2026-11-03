@@ -88,9 +88,17 @@ async def test_invalid_segmented_layer_is_never_cached(monkeypatch, groups):
             yield SimpleNamespace(payload=self.payload)
 
     class Track:
+        def __init__(self):
+            self.cursor = 0
+
         async def __aiter__(self):
-            for sequence, payload in groups:
+            while self.cursor < len(groups):
+                sequence, payload = groups[self.cursor]
+                self.cursor += 1
                 yield Group(sequence, payload)
+
+        def update(self, _preferences):
+            pass
 
         def cancel(self):
             pass

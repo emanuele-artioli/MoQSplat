@@ -34,7 +34,7 @@ dependencies = [
 [project.optional-dependencies]
 publisher = [
     "ultralytics==8.4.6",
-    "opencv-python-headless==4.10.0.84",
+    "opencv-python==4.10.0.84",
     "matplotlib>=3.8",
     "scipy>=1.11",
 ]
