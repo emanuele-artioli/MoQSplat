@@ -265,11 +265,11 @@ async def experience(args):
     port = free_port()
     relay_url = f"https://127.0.0.1:{port}"
     relay_command = runner + ["relay", "--bind", f"127.0.0.1:{port}", "--duration", "1800"]
-    result = {"valid": False, "cases": [], "stage": args.stage}
+    result = {"valid": False, "cases": [], "stage": args.stage, "case_set": args.case_set}
     try:
         relay = children.start("relay", relay_command)
         await children.ready(relay)
-        if args.stage == "smoke":
+        if args.stage == "smoke" and args.case_set == "all":
             await asyncio.to_thread(
                 command,
                 [
@@ -312,17 +312,25 @@ async def experience(args):
         )
         await children.ready(publisher)
         profiles = [
-            ("direct", 0, 0, 0, 45 if args.stage == "smoke" else 60),
+            (
+                "direct",
+                0,
+                0,
+                0,
+                90 if args.audience == 2 else (45 if args.stage == "smoke" else 60),
+            ),
             ("constrained", 120, 80, 0.001, 40 if args.stage == "smoke" else 90),
             ("recovery-soak", 200, 10, 0.001, args.soak_seconds),
         ]
+        if args.case_set != "all":
+            profiles = [p for p in profiles if (p[0] == "direct") == (args.case_set == "direct")]
         for label, mbps, delay, loss, duration in profiles:
             proxy = await UDPProxy.start(
                 ("127.0.0.1", port), mbps=mbps, delay_ms=delay, loss=loss, seed=19
             )
             clients = []
             try:
-                count = 1 if args.stage == "smoke" else 2
+                count = args.audience or (1 if args.stage == "smoke" else 2)
                 for number in range(count):
                     viewer = free_port()
                     folder = output / f"{label}-{number}"
@@ -363,6 +371,8 @@ async def experience(args):
                     await children.ready(child)
                     clients.append((child, folder, f"http://127.0.0.1:{viewer}"))
                 first_frame = False
+                early_move_at = None
+                early_reset = False
                 restart = False
                 lowered = False
                 raised = False
@@ -392,13 +402,23 @@ async def experience(args):
                             continue
                         if status.get("nonblack_pixels", 0):
                             first_frame = True
+                    if first_frame and early_move_at is None:
+                        await post_clients("/input", {"yaw": 0.02, "right": 0.01})
+                        early_move_at = elapsed
+                    if (
+                        early_move_at is not None
+                        and elapsed > early_move_at + 0.8
+                        and not early_reset
+                    ):
+                        await post_clients("/input", {"trace": True})
+                        early_reset = True
                     if (
                         first_frame
+                        and early_reset
                         and not lowered
                         and (
                             label != "direct"
                             or status.get("received_layers") == status.get("total_layers")
-                            or elapsed > duration / 2
                         )
                     ):
                         await post_clients("/input", {"yaw": 0.08, "right": 0.05})
@@ -478,6 +498,8 @@ def main():
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--ffmpeg", default="/opt/local/bin/ffmpeg")
     parser.add_argument("--stage", choices=("smoke", "full"), required=True)
+    parser.add_argument("--case-set", choices=("all", "direct", "impaired"), default="all")
+    parser.add_argument("--audience", type=int, choices=(0, 1, 2), default=0)
     parser.add_argument("--soak-seconds", type=int, required=True)
     asyncio.run(experience(parser.parse_args()))
 
