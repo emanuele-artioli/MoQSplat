@@ -5,7 +5,7 @@
 The publisher prepares a static scene once. The native `--scene` path splits
 it deterministically into spatial groups (at most 65,536 Gaussians by default),
 then five disjoint opacity/scale quality layers per group. Every Gaussian and
-its original attributes are preserved. The prepared-manifest path instead
+its original render attributes are preserved. The prepared-manifest path instead
 preserves original semantic publisher groups. Both use independently
 subscribable native layer tracks and real QUIC.
 

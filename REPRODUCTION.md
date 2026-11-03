@@ -36,7 +36,8 @@ another scheduling method at the same bandwidth.
 
 The November 1 report applies to the historical finite harness: one scene/GPU
 class, short loopback sessions and sequential subscribers. New live-client,
-semantic-publisher and controlled-network qualification is recorded separately;
+semantic-publisher and controlled-network qualification is in
+[the November 3 report](reproduction/VALIDATION-20261103.md);
 implementation alone does not establish real WAN behavior, a fresh operating
 system installation or long-duration reliability.
 

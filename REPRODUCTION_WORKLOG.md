@@ -102,3 +102,20 @@ Bounded wait handle44468; output `/tmp/moqsplat-v6-bounded-wait-20261101.json`. 
 ## Final decision — correctness gate passed
 Job20261101T161843Z-425ac71f COMPLETE, smoke/full validatorspassed. CPU82passed; sourceCUDAandlegacyTCPpassedbothscales; native3processQUIC receivedall6,131,954Gaussians,5layers,1,447,148,624payloadbytes,exactsourceattributes. Full3final+3progressiveframes; overlapslive transfers;45changedpriorities/72poses;cache revisitrequests0. Finalimagesvisuallyinspected; directsourcecomparisonmaxabsolute8bitRGBerrors1,2,2 across3frames. Execution100.31ssmoke/87.68sfull; supervisor209.38s, charge360swithstaging, aggregate1440/3600GPU-s. Stopdecisionmade, no bandwidthsweep/training. Terminalevent38106ddc873c517d8c91d3727517672d acknowledged; boundedwaitended204s; no tasktimerscreatedorremaining. Canonicalevidenceinjobinbox;localexports/tmp/moqsplat-v6-validated-20261101 and/tmp/moqsplat-v6-full-images-20261101. NativeFFIlibrarySHAaa313c69b57e287234cd2d925bdeeaa27bdb9609c3bf6c059a9d5700f4b8a36a;FFmpeg7.0.2-staticplugin0.7.0;CUDAcompiler12.4.131. Readablepublicreport reproduction/VALIDATION-20261101.md records original-wire/performance/semantic-publisher limits.
 Validation clarification: installed fleet invokes external validator for smoke only. Full command self-checks passed; the identical adapter validator was separately run locally against exported fullsummary and passed after completion. Publicreport distinguishes smoke fleetgate from post-run fullartifact verification; do not describe two fleetpromotiongates.
+
+
+## 3 November follow-up — release qualification
+
+User authorized live playback, reconnection, client memory management, clean
+installation, broader network tests, merge and unsent email drafts. Extended
+paper work excluded. Complete report: reproduction/VALIDATION-20261103.md.
+Final job20261103T162943Z-5642b945 COMPLETE,119CPUtests; concurrent controlled
+40s pilot and180s relay-recovery sessions passed; both recovery clients all640
+layers,1reconnection,589/593evictions,0cache-revisitrequests. Raw45/36black
+partialframes displayed as explicit held previous images. CPU post-run full
+validatorpassed3,982frames. Prior valid semantic/single-client smoke explicitly
+reused by hash; two direct clients also completedall640layers in90s, although
+that job exposed a test-controller eviction timing defect that was corrected.
+Conservative aggregate3,600/3,600GPU-s; no moreGPUwork. Actual independent WAN
+reachability failed and new-OS/hours-long testing remains external. All source
+archives, failed results and canonical raw logs retained. No messages sent.

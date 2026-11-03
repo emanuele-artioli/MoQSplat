@@ -59,7 +59,8 @@ remain TCP simulators. Use the native commands above to test MoQ/QUIC.
 
 [The November 1 GPU report](reproduction/VALIDATION-20261101.md) records exact
 full-scene transport and source-render comparison, including failed attempts.
-New live-client qualification is recorded separately and does not rewrite that
-historical evidence.
+[The November 3 client report](reproduction/VALIDATION-20261103.md) records
+clean installation, semantic publisher/VMAF, continuous playback, memory
+eviction and concurrent recovery tests, together with failures and limits.
 
 MIT license.
