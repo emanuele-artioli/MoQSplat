@@ -69,6 +69,15 @@ def validate_curve(rows):
                 raise ValueError(f"VMAF metric outside finite [0,100] bounds: {key}")
 
 
+def all_clients_received(statuses, expected_clients):
+    """Empty startup status must never count as a complete received scene."""
+    return len(statuses) == expected_clients and all(
+        status.get("total_layers", 0) > 0
+        and status.get("received_layers", 0) == status["total_layers"]
+        for status in statuses
+    )
+
+
 class Children:
     def __init__(self, output):
         self.output = output
@@ -323,7 +332,13 @@ async def experience(args):
             ("recovery-soak", 200, 10, 0.001, args.soak_seconds),
         ]
         if args.case_set != "all":
-            profiles = [p for p in profiles if (p[0] == "direct") == (args.case_set == "direct")]
+            names = {
+                "direct": {"direct"},
+                "impaired": {"constrained", "recovery-soak"},
+                "constrained": {"constrained"},
+                "recovery": {"recovery-soak"},
+            }[args.case_set]
+            profiles = [p for p in profiles if p[0] in names]
         for label, mbps, delay, loss, duration in profiles:
             proxy = await UDPProxy.start(
                 ("127.0.0.1", port), mbps=mbps, delay_ms=delay, loss=loss, seed=19
@@ -371,6 +386,9 @@ async def experience(args):
                     await children.ready(child)
                     clients.append((child, folder, f"http://127.0.0.1:{viewer}"))
                 first_frame = False
+                observed_statuses = {}
+                late_cycle_at = None
+                late_restored = False
                 early_move_at = None
                 early_reset = False
                 restart = False
@@ -400,8 +418,13 @@ async def experience(args):
                             status = await asyncio.to_thread(request, viewer + "/status")
                         except OSError:
                             continue
-                        if status.get("nonblack_pixels", 0):
-                            first_frame = True
+                        observed_statuses[viewer] = status
+                    statuses = list(observed_statuses.values())
+                    if len(statuses) == len(clients) and all(
+                        s.get("nonblack_pixels", 0) > 0 for s in statuses
+                    ):
+                        first_frame = True
+                    complete = all_clients_received(statuses, len(clients))
                     if first_frame and early_move_at is None:
                         await post_clients("/input", {"yaw": 0.02, "right": 0.01})
                         early_move_at = elapsed
@@ -416,10 +439,7 @@ async def experience(args):
                         first_frame
                         and early_reset
                         and not lowered
-                        and (
-                            label != "direct"
-                            or status.get("received_layers") == status.get("total_layers")
-                        )
+                        and (label != "direct" or complete)
                     ):
                         await post_clients("/input", {"yaw": 0.08, "right": 0.05})
                         await post_clients("/budget", {"mib": 1536})
@@ -431,6 +451,16 @@ async def experience(args):
                     if lowered and elapsed > lowered_at + 3 and not raised:
                         await post_clients("/budget", {"mib": 6144})
                         raised = True
+                    if label == "recovery-soak" and complete and raised and late_cycle_at is None:
+                        await post_clients("/budget", {"mib": 1536})
+                        late_cycle_at = elapsed
+                    if (
+                        late_cycle_at is not None
+                        and elapsed > late_cycle_at + 3
+                        and not late_restored
+                    ):
+                        await post_clients("/budget", {"mib": 6144})
+                        late_restored = True
                     if label == "recovery-soak" and first_frame and not restart:
                         await children.stop_one(relay[0])
                         await asyncio.sleep(0.3)
@@ -499,7 +529,11 @@ def main():
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--ffmpeg", default="/opt/local/bin/ffmpeg")
     parser.add_argument("--stage", choices=("smoke", "full"), required=True)
-    parser.add_argument("--case-set", choices=("all", "direct", "impaired"), default="all")
+    parser.add_argument(
+        "--case-set",
+        choices=("all", "direct", "impaired", "constrained", "recovery"),
+        default="all",
+    )
     parser.add_argument("--audience", type=int, choices=(0, 1, 2), default=0)
     parser.add_argument("--soak-seconds", type=int, required=True)
     asyncio.run(experience(parser.parse_args()))
