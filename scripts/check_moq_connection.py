@@ -13,48 +13,62 @@ from moq3dgs.transport.moq_backend import Layer, LayerReceiver, ReconnectingBroa
 async def check(args):
     output = Path(args.output).resolve()
     output.mkdir(parents=True, exist_ok=False)
-    async with ReconnectingBroadcast(
-        args.relay,
-        args.broadcast,
-        tls_verify=not args.insecure,
-        timeout=args.timeout,
-        max_reconnects=3,
-        cache_capacity_bytes=args.native_cache_mib * 1024 * 1024,
-    ) as connection:
-        receiver = LayerReceiver(connection, timeout=args.timeout)
-        catalog = await receiver.catalog()
-        layers = sorted((Layer(**item) for item in catalog["layers"]), key=lambda x: x.priority)
-        if args.max_layers:
-            layers = layers[: args.max_layers]
+    try:
+        async with ReconnectingBroadcast(
+            args.relay,
+            args.broadcast,
+            tls_verify=not args.insecure,
+            timeout=args.timeout,
+            max_reconnects=3,
+            cache_capacity_bytes=args.native_cache_mib * 1024 * 1024,
+        ) as connection:
+            receiver = LayerReceiver(connection, timeout=args.timeout)
+            catalog = await receiver.catalog()
+            layers = sorted((Layer(**item) for item in catalog["layers"]), key=lambda x: x.priority)
+            if args.max_layers:
+                layers = layers[: args.max_layers]
 
-        async def receive(layer):
-            path = await receiver.receive_file(layer, output / "cache")
-            await asyncio.to_thread(
-                verify_arrays, path, catalog["metadata"]["source_array_hashes"][layer.name]
-            )
+            async def receive(layer):
+                path = await receiver.receive_file(layer, output / "cache")
+                await asyncio.to_thread(
+                    verify_arrays, path, catalog["metadata"]["source_array_hashes"][layer.name]
+                )
 
-        try:
-            await asyncio.gather(*(receive(layer) for layer in layers))
-            initial_requests = receiver.requests
-            await asyncio.gather(
-                *(receiver.receive_file(layer, output / "cache") for layer in layers)
+            try:
+                await asyncio.gather(*(receive(layer) for layer in layers))
+                initial_requests = receiver.requests
+                await asyncio.gather(
+                    *(receiver.receive_file(layer, output / "cache") for layer in layers)
+                )
+                result = {
+                    "valid": True,
+                    "transport": "QUIC",
+                    "rendering_tested": False,
+                    "catalog_identity": connection.identity,
+                    "layers_received": len(layers),
+                    "bytes_received_payload": sum(layer.size for layer in layers),
+                    "source_attributes_exact": True,
+                    "reconnects": connection.reconnects,
+                    "cache_revisit_requests": receiver.requests - initial_requests,
+                    "quic_stats": quic_stats(connection.client),
+                }
+                (output / "summary.json").write_text(json.dumps(result, indent=2))
+                print(json.dumps(result), flush=True)
+            finally:
+                await receiver.close()
+    except BaseException as exc:
+        (output / "summary.json").write_text(
+            json.dumps(
+                {
+                    "valid": False,
+                    "rendering_tested": False,
+                    "relay": args.relay,
+                    "error": f"{type(exc).__name__}: {exc}",
+                },
+                indent=2,
             )
-            result = {
-                "valid": True,
-                "transport": "QUIC",
-                "rendering_tested": False,
-                "catalog_identity": connection.identity,
-                "layers_received": len(layers),
-                "bytes_received_payload": sum(layer.size for layer in layers),
-                "source_attributes_exact": True,
-                "reconnects": connection.reconnects,
-                "cache_revisit_requests": receiver.requests - initial_requests,
-                "quic_stats": quic_stats(connection.client),
-            }
-            (output / "summary.json").write_text(json.dumps(result, indent=2))
-            print(json.dumps(result), flush=True)
-        finally:
-            await receiver.close()
+        )
+        raise
 
 
 def main():
