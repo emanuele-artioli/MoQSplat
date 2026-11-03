@@ -151,6 +151,25 @@ def synthesise_orbit_trajectory(preview_cam: dict,
         raise ValueError(f"need at least 2 frames, got {n_frames}")
 
     centroid = np.asarray(preview_cam["centroid"], dtype=np.float64)
+    if preview_cam.get("format") == "opengl_matrix":
+        base_view = np.asarray(preview_cam["view_matrix"], dtype=np.float64)
+        base_c2w = np.linalg.inv(base_view)
+        frames = []
+        for i in range(n_frames):
+            t = i / (n_frames - 1)
+            delta = amplitude_deg * math.sin(2 * math.pi * t) * 0.5 * (1 - math.cos(2 * math.pi * t))
+            angle = math.radians(delta)
+            rotation = np.array([[math.cos(angle), 0, math.sin(angle)], [0, 1, 0],
+                                 [-math.sin(angle), 0, math.cos(angle)]])
+            c2w = base_c2w.copy()
+            c2w[:3, :3] = rotation @ base_c2w[:3, :3]
+            c2w[:3, 3] = centroid + rotation @ (base_c2w[:3, 3] - centroid)
+            view = base_view if i == 0 else np.linalg.inv(c2w)
+            frames.append({"timestamp_ms": int(round(i * 1000 / fps)),
+                           "view_matrix": view.tolist(), "camera_position": c2w[:3, 3].tolist(),
+                           "fov": preview_cam["fov"], "fov_angles": preview_cam["fov_angles"],
+                           "width": preview_cam["width"], "height": preview_cam["height"]})
+        return frames
     base_az  = float(preview_cam["angle"])
     base_el  = float(preview_cam["elevation"])
 
@@ -264,7 +283,10 @@ def main():
     os.makedirs(os.path.dirname(os.path.abspath(args.out_json)) or ".",
                  exist_ok=True)
     with open(args.out_json, "w") as f:
-        json.dump(frames, f, indent=2)
+        result = ({"metadata": {"camera_basis": "OpenGL", "cluster_id": target["cluster_id"]},
+                   "frames": frames} if target["preview_camera"].get("format") == "opengl_matrix"
+                  else frames)
+        json.dump(result, f, indent=2)
     print(f"[orbit] wrote {len(frames)} frames -> {args.out_json}")
     print(f"[orbit] target cluster: id={target['cluster_id']} "
           f"label={target['label']} classes={target['object_classes']}")

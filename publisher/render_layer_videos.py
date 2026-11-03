@@ -52,6 +52,7 @@ Usage:
 import argparse
 import json
 import os
+import hashlib
 import sys
 from typing import Dict, List, Optional
 
@@ -59,11 +60,9 @@ import cv2
 import numpy as np
 from plyfile import PlyData
 from tqdm import tqdm
-os.environ["TORCH_CUDA_ARCH_LIST"] = "7.0"
-os.environ["MAX_JOBS"] = "1"
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gsplat_object_segmentation import (   # noqa: E402
+from gsplat_clustering_vmaf import (   # noqa: E402
     GaussianModel,
     load_gaussian_ply,
     load_trajectory_as_movements,
@@ -85,7 +84,10 @@ def _build_xyz_hash(model: GaussianModel) -> Dict[bytes, int]:
     xyz_bytes = model.xyz.astype(np.float32).tobytes()
     h = {}
     for i in range(len(model)):
-        h[xyz_bytes[i*12:(i+1)*12]] = i
+        key = xyz_bytes[i*12:(i+1)*12]
+        if key in h:
+            raise ValueError("source contains duplicate Gaussian XYZ; legacy index matching is ambiguous")
+        h[key] = i
     return h
 
 
@@ -106,12 +108,54 @@ def _mask_from_ply_file(ply_path: str, model: GaussianModel,
     for i in range(len(xs)):
         key = raw[i*12:(i+1)*12]
         idx = xyz_to_idx.get(key)
-        if idx is not None:
-            out[idx] = True
-            n_matched += 1
+        if idx is None:
+            raise ValueError(f"Gaussian in {ply_path} does not match source XYZ")
+        if out[idx]:
+            raise ValueError(f"duplicate Gaussian XYZ in {ply_path}")
+        out[idx] = True
+        n_matched += 1
     print(f"[mask-recon]   {os.path.basename(ply_path)}: "
           f"matched {n_matched:,}/{len(xs):,}")
     return out
+
+
+def load_ranked_source_indices(model, manifest, outdir, source_path):
+    """Validate source-bound ranked indices, or return None for legacy manifests."""
+    entries = manifest["objects"]
+    if not entries or not all("ranked_source_indices" in e for e in entries):
+        return None
+    digest = hashlib.sha256()
+    with open(source_path, "rb") as source:
+        for block in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(block)
+    if digest.hexdigest() != manifest.get("source_sha256"):
+        raise ValueError("source PLY SHA256 differs from indexed manifest")
+    result = {}
+    root = os.path.realpath(outdir)
+    for entry in entries:
+        directory = os.path.realpath(os.path.join(root, entry["dir_relative_to_outdir"]))
+        path = os.path.realpath(os.path.join(directory, entry["ranked_source_indices"]))
+        if os.path.commonpath([root, directory, path]) != root or not path.startswith(directory + os.sep):
+            raise ValueError("source index path escapes object directory")
+        with open(path, "rb") as source:
+            content = source.read()
+        if hashlib.sha256(content).hexdigest() != entry["ranked_source_indices_sha256"]:
+            raise ValueError("source index SHA256 mismatch")
+        import io
+        indices = np.load(io.BytesIO(content), allow_pickle=False)
+        if (indices.ndim != 1 or indices.dtype.kind not in "iu"
+                or len(indices) != entry["n_total"] or entry["n_source_gaussians"] != len(model)
+                or np.any(indices < 0) or np.any(indices >= len(model))
+                or len(np.unique(indices)) != len(indices)):
+            raise ValueError("invalid ranked source indices")
+        for layer in entry["layers"]:
+            delta = os.path.join(directory, layer["file"])
+            if not os.path.isfile(delta):
+                raise FileNotFoundError(f"missing DELTA layer: {delta}")
+            if "size_bytes" in layer and os.path.getsize(delta) != layer["size_bytes"]:
+                raise ValueError(f"DELTA file size mismatch: {delta}")
+        result[entry["object_id"]] = indices
+    return result
 
 
 def recover_object_full_masks(model: GaussianModel, manifest: dict,
@@ -128,6 +172,14 @@ def recover_object_full_masks(model: GaussianModel, manifest: dict,
     for entry in manifest["objects"]:
         oid = entry["object_id"]
         sub = entry["dir_relative_to_outdir"]
+        if not entry.get("layers"):
+            raise ValueError(f"object {oid} has no DELTA layers")
+        for layer in entry["layers"]:
+            path = os.path.join(outdir, sub, layer["file"])
+            if not os.path.isfile(path):
+                raise FileNotFoundError(f"missing DELTA layer: {path}")
+            if "size_bytes" in layer and os.path.getsize(path) != layer["size_bytes"]:
+                raise ValueError(f"DELTA file size mismatch: {path}")
         full_fname = entry.get("full_file")
         if full_fname:
             full_path = os.path.join(outdir, sub, full_fname)
@@ -141,8 +193,7 @@ def recover_object_full_masks(model: GaussianModel, manifest: dict,
         for L in entry["layers"]:
             p = os.path.join(outdir, sub, L["file"])
             if not os.path.exists(p):
-                print(f"[mask-recon] WARN: missing {p}; skipping")
-                continue
+                raise FileNotFoundError(f"missing DELTA layer: {p}")
             m |= _mask_from_ply_file(p, model, xyz_to_idx)
         object_masks[oid] = m
     return object_masks
@@ -192,6 +243,8 @@ def main():
     ap.add_argument("--use_fallback_rasterizer", action="store_true",
                     help="force NumPy CPU rasterizer (debug only).")
     args = ap.parse_args()
+    if os.path.lexists(args.out_dir):
+        raise FileExistsError(f"output already exists: {args.out_dir}")
 
     if args.device is None:
         try:
@@ -227,7 +280,15 @@ def main():
 
     # 1) Recover per-object full masks from saved .plys.
     print("[render-layers] reconstructing per-object full masks from disk...")
-    obj_full_masks = recover_object_full_masks(model, manifest, manifest_dir)
+    ranked_indices = load_ranked_source_indices(model, manifest, manifest_dir, args.input)
+    if ranked_indices is None:
+        obj_full_masks = recover_object_full_masks(model, manifest, manifest_dir)
+    else:
+        obj_full_masks = {}
+        for oid, indices in ranked_indices.items():
+            mask = np.zeros(len(model), dtype=bool)
+            mask[indices] = True
+            obj_full_masks[oid] = mask
     # 'other' may or may not be present in manifest; if not, derive it.
     if -1 not in obj_full_masks:
         non_other = {k: v for k, v in obj_full_masks.items() if k != -1}
@@ -254,8 +315,13 @@ def main():
             else:
                 # this object has fewer layers than this level -> use all
                 cum_n = entry["layers"][-1]["cumulative_gaussians"]
-            combined |= cumulative_mask_for_object(model, full_mask, cum_n,
-                                                     rank_method)
+            if ranked_indices is not None:
+                if not 0 <= cum_n <= len(ranked_indices[oid]):
+                    raise ValueError(f"invalid cumulative Gaussian count for object {oid}")
+                combined[ranked_indices[oid][:cum_n]] = True
+            else:
+                combined |= cumulative_mask_for_object(model, full_mask, cum_n,
+                                                         rank_method)
         combined_masks_by_level.append(combined)
 
         # Rate axis: cumulative bytes across the whole scene at this level.
@@ -271,7 +337,7 @@ def main():
               f"cum_pct={layer_pcts[k]}%")
 
     # 3) Render each level through the full trajectory.
-    os.makedirs(args.out_dir, exist_ok=True)
+    os.makedirs(args.out_dir, exist_ok=False)
     rates_per_level = {}
     level_dir_names = []
     for k in range(n_layers):

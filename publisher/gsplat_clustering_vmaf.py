@@ -52,6 +52,7 @@ Requirements
 """
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -65,8 +66,6 @@ from plyfile import PlyData, PlyElement
 import cv2
 from tqdm import tqdm
 from scipy.spatial.transform import Rotation as Rsp
-os.environ["TORCH_CUDA_ARCH_LIST"] = "7.0"
-os.environ["MAX_JOBS"] = "1"
 
 try:
     from gsplat import rasterization as gsplat_rasterization
@@ -91,6 +90,13 @@ except Exception:
 # ============================================================================
 #  3DGS .ply I/O
 # ============================================================================
+
+def _sha256_stream(stream):
+    digest = hashlib.sha256()
+    for block in iter(lambda: stream.read(1024 * 1024), b""):
+        digest.update(block)
+    return digest.hexdigest()
+
 
 @dataclass
 class GaussianModel:
@@ -243,7 +249,12 @@ def derive_views(base: Movement,
     fov_scale : multiply fx, fy. <1 widens the FOV (more visible per frame).
     """
     p_base = np.array([base.x, base.y, base.z], dtype=np.float64)
-    right_base, _, fwd_base = cam_axes_from_euler(base.angle, base.elevation)
+    if base.viewmat_override is not None:
+        c2w = np.linalg.inv(np.asarray(base.viewmat_override, dtype=np.float64))
+        base_rot = c2w[:3, :3]
+        right_base, fwd_base = base_rot[:, 0], base_rot[:, 2]
+    else:
+        right_base, _, fwd_base = cam_axes_from_euler(base.angle, base.elevation)
 
     if view_distance is None:
         view_distance = float(np.clip(np.linalg.norm(p_base), 1.0, 50.0))
@@ -256,8 +267,19 @@ def derive_views(base: Movement,
         for (dyaw, delev) in view_specs:
             new_az = base.angle + dyaw
             new_el = base.elevation + delev
-            _, _, new_fwd = cam_axes_from_euler(new_az, new_el)
+            if base.viewmat_override is not None:
+                delta = Rsp.from_euler("xyz", [delev, dyaw, 0], degrees=True).as_matrix()
+                new_rot = base_rot @ delta
+                new_fwd = new_rot[:, 2]
+            else:
+                _, _, new_fwd = cam_axes_from_euler(new_az, new_el)
             new_pos = target - view_distance * new_fwd
+            override = None
+            if base.viewmat_override is not None:
+                c2w_new = np.eye(4)
+                c2w_new[:3, :3] = new_rot
+                c2w_new[:3, 3] = new_pos
+                override = np.linalg.inv(c2w_new).astype(np.float32)
             out.append(Movement(
                 name=f"v{idx:02d}_az{int(round(dyaw)):+04d}"
                      f"_el{int(round(delev)):+03d}_lat{lat:+.2f}",
@@ -267,6 +289,7 @@ def derive_views(base: Movement,
                 cx=base.cx, cy=base.cy,
                 width=base.width, height=base.height,
                 profile=base.profile,
+                viewmat_override=override,
             ))
             idx += 1
     return out
@@ -305,28 +328,29 @@ def view_preset(name: str) -> List[Tuple[float, float]]:
 def _movement_from_trajectory_frame(m: dict, default_w: int = 800,
                                     default_h: int = 600,
                                     name: str = "base") -> Movement:
-    """Build a Movement from a trajectory entry that uses {view_matrix, fov,
-    camera_position}. The view_matrix is taken to be world-to-camera (verified
-    against the user's frames -- C = -R^T t matches camera_position to <1mm).
-    fov is treated as horizontal FOV in degrees; fy is set so vertical FOV
-    matches at the given image size."""
+    """Convert explicit OpenGL world-to-camera pose to gsplat's OpenCV basis."""
     V = np.asarray(m['view_matrix'], dtype=np.float64)
-    if V.shape != (4, 4):
-        raise ValueError(f"view_matrix must be 4x4, got {V.shape}")
-
-    width  = int(m.get('width',  default_w))
+    if (V.shape != (4, 4) or not np.isfinite(V).all()
+            or not np.allclose(V[3], [0, 0, 0, 1])
+            or not np.allclose(V[:3, :3] @ V[:3, :3].T, np.eye(3), atol=1e-4)
+            or not np.isclose(np.linalg.det(V[:3, :3]), 1, atol=1e-4)):
+        raise ValueError("view_matrix must be a finite rigid world-to-camera transform")
+    width = int(m.get('width', default_w))
     height = int(m.get('height', default_h))
-    fov_h_deg = float(m['fov'])
-    fx = 0.5 * width  / math.tan(math.radians(fov_h_deg) * 0.5)
-    fy = fx * (height / width)   # square pixels => same focal in pixels for both axes
-    cx = m.get('cx', 0.5 * width)
-    cy = m.get('cy', 0.5 * height)
-
-    pos = m.get('camera_position', None)
-    if pos is None:
-        # derive from view_matrix
-        R = V[:3, :3]; t = V[:3, 3]
-        pos = (-R.T @ t).tolist()
+    if width <= 0 or height <= 0:
+        raise ValueError("camera dimensions must be positive")
+    angles = np.asarray(m.get('fov_angles'), dtype=np.float64)
+    if (angles.shape != (4,) or not np.isfinite(angles).all()
+            or np.any(np.abs(angles) >= np.pi / 2)
+            or angles[0] >= angles[1] or angles[2] >= angles[3]):
+        raise ValueError("trajectory requires signed fov_angles [left,right,down,up]")
+    left, right, down, up = np.tan(angles)
+    fx, fy = width / (right - left), height / (up - down)
+    cx, cy = -fx * left, fy * up
+    pos = -V[:3, :3].T @ V[:3, 3]
+    if 'camera_position' in m and not np.allclose(pos, m['camera_position'], atol=1e-4):
+        raise ValueError("camera_position disagrees with view_matrix")
+    V = np.diag([1., -1., -1., 1.]) @ V
 
     return Movement(
         name=name,
@@ -337,6 +361,12 @@ def _movement_from_trajectory_frame(m: dict, default_w: int = 800,
         profile=int(m.get('profile', 0)),
         viewmat_override=V.astype(np.float32),
     )
+
+
+def _require_opengl_trajectory(data):
+    metadata = data.get('metadata', {}) if isinstance(data, dict) else {}
+    if 'OpenGL' not in metadata.get('camera_basis', ''):
+        raise ValueError("trajectory metadata must declare an OpenGL camera_basis")
 
 
 def load_camera_json(path: str, frame_index: int = 0) -> Movement:
@@ -370,6 +400,7 @@ def load_camera_json(path: str, frame_index: int = 0) -> Movement:
           f"using index {frame_index}")
 
     if fmt == 'trajectory':
+        _require_opengl_trajectory(data)
         return _movement_from_trajectory_frame(m, name="base")
 
     # legacy format
@@ -399,6 +430,8 @@ def load_trajectory_as_movements(path: str, max_frames: Optional[int] = None
     if not frames:
         return []
     is_trajectory = 'view_matrix' in frames[0]
+    if is_trajectory:
+        _require_opengl_trajectory(data)
 
     if max_frames is not None and len(frames) > max_frames:
         # uniformly subsample
@@ -582,7 +615,9 @@ def render_fallback(model, mv, device, bg=(0.05,0.05,0.05),
 
 def render_one(model, mv, device, use_fallback=False,
                subset_mask: Optional[np.ndarray] = None) -> np.ndarray:
-    if HAS_GSPLAT and not use_fallback and str(device).startswith("cuda"):
+    if not use_fallback and str(device).startswith("cuda"):
+        if not HAS_GSPLAT:
+            raise RuntimeError("CUDA rendering requires a working gsplat installation")
         return render_with_gsplat(model, mv, device, subset_mask=subset_mask)
     return render_fallback(model, mv, device, subset_mask=subset_mask)
 
@@ -977,6 +1012,10 @@ def build_camera_looking_at(target: np.ndarray, ref_mv: Movement,
     distance = fy * extent_safe / max(desired_pixels, 1.0)
     distance = float(np.clip(distance, 0.3, 50.0))
     pos = target - distance * fwd
+    override = None
+    if ref_mv.viewmat_override is not None:
+        override = np.asarray(ref_mv.viewmat_override, dtype=np.float64).copy()
+        override[:3, 3] = -override[:3, :3] @ pos
     return Movement(
         name=f"obj_centered_d{distance:.2f}",
         angle=ref_mv.angle, elevation=ref_mv.elevation,
@@ -984,8 +1023,7 @@ def build_camera_looking_at(target: np.ndarray, ref_mv: Movement,
         fx=ref_mv.fx, fy=ref_mv.fy, cx=ref_mv.cx, cy=ref_mv.cy,
         width=ref_mv.width, height=ref_mv.height,
         profile=ref_mv.profile,
-        # viewmat_override left None so create_viewmat builds the matrix
-        # from our angle/elevation/x/y/z (correct framing guaranteed).
+        viewmat_override=override,
     )
 
 
@@ -1481,7 +1519,14 @@ def write_progressive_layers(model: GaussianModel,
         full_path  = os.path.join(out_dir, full_fname)
         save_gaussian_ply(model, object_mask, full_path)
 
+    index_path = os.path.join(out_dir, "ranked_source_indices.npy")
+    np.save(index_path, sorted_indices.astype(np.int64), allow_pickle=False)
+    with open(index_path, "rb") as index_file:
+        index_sha256 = hashlib.sha256(index_file.read()).hexdigest()
     manifest = {
+        "ranked_source_indices": "ranked_source_indices.npy",
+        "ranked_source_indices_sha256": index_sha256,
+        "n_source_gaussians": len(model),
         "object":       object_label,
         "n_total":      n_total,
         "rank_method":  rank_method,
@@ -2553,7 +2598,7 @@ def main():
                                                           Optional[np.ndarray]]:
             """Returns (cumulative_strip, layer_only_strip, color_overlay)
             in BGR, or (None, None, None) if viz is disabled or empty."""
-            if (args.no_layers or args.no_layer_viz or
+            if (args.no_layers or
                     not cmf.get("layers") or cmask.sum() == 0):
                 return None, None, None
             # Re-derive the per-layer masks from the manifest. Each layer
@@ -2604,6 +2649,24 @@ def main():
                 "extent":   float(extent),
                 "fit_fraction": float(args.preview_fit_fraction),
             }
+
+            if cam.viewmat_override is not None:
+                gl_view = np.diag([1., -1., -1., 1.]) @ cam.viewmat_override
+                left = math.atan(-cam.cx / cam.fx)
+                right = math.atan((cam.width - cam.cx) / cam.fx)
+                down = math.atan((cam.cy - cam.height) / cam.fy)
+                up = math.atan(cam.cy / cam.fy)
+                cmf["preview_camera"].update({
+                    "format": "opengl_matrix", "view_matrix": gl_view.tolist(),
+                    "camera_position": [cam.x, cam.y, cam.z],
+                    "fov_angles": [left, right, down, up],
+                    "fov": math.degrees(up - down),
+                })
+
+            # Camera metadata is needed by the orbit/VMAF pipeline even when
+            # expensive preview figures are explicitly disabled.
+            if args.no_layer_viz:
+                return None, None, None
 
             # 1) Cumulative progression strip (what the client sees over time).
             prog = make_layer_progression_image(
@@ -2807,7 +2870,10 @@ def main():
 
         total_bytes_scene = sum(mf.get("total_bytes", 0)
                                 for _, _, mf in object_manifests)
+        with open(args.input, "rb") as source_file:
+            source_sha256 = _sha256_stream(source_file)
         top_manifest = {
+            "source_sha256": source_sha256,
             "scene":             os.path.basename(args.input),
             "n_total_gaussians": len(model),
             "rank_method":       args.layer_rank,
@@ -2866,6 +2932,9 @@ def main():
             for ci, lbl, mf in cluster_manifests:
                 top_manifest["clustering"]["clusters"].append({
                     "cluster_id":     ci,
+                    "ranked_source_indices": mf.get("ranked_source_indices"),
+                    "ranked_source_indices_sha256": mf.get("ranked_source_indices_sha256"),
+                    "n_source_gaussians": mf.get("n_source_gaussians"),
                     "label":          lbl,
                     "object_ids":     mf.get("object_ids", []),
                     "object_classes": mf.get("object_classes", []),

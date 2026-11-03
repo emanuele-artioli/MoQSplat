@@ -26,10 +26,7 @@
 #  Requirements:
 #    - Python env with: torch, gsplat, ultralytics, plyfile, opencv, scipy
 #    - ffmpeg compiled with libvmaf (verify: ffmpeg -filters | grep libvmaf)
-#      If your system ffmpeg lacks libvmaf, set FFMPEG_BIN to a static build:
-#        cd /tmp && wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
-#        tar xf ffmpeg-release-amd64-static.tar.xz
-#        FFMPEG_BIN=/tmp/ffmpeg-*-amd64-static/ffmpeg ./compute_rd_vmaf.sh
+#      Set FFMPEG_BIN to a locally installed libvmaf-enabled ffmpeg if needed.
 #
 #  Usage:
 #    ./compute_rd_vmaf.sh
@@ -66,7 +63,7 @@ ORBIT_AMPLITUDE_DEG="${ORBIT_AMPLITUDE_DEG:-90}"
 DEVICE="${DEVICE:-cuda}"
 
 # -------- Encoding & VMAF ---------------------------------------------------
-FFMPEG="${FFMPEG_BIN:-${FFMPEG:-../ffmpeg/ffmpeg-7.0.2-amd64-static/ffmpeg}}"
+FFMPEG="${FFMPEG_BIN:-${FFMPEG:-ffmpeg}}"
 
 # Lossless x264, yuv420p chroma subsampling (required by libvmaf default model).
 FFMPEG_X264_FLAGS="-c:v libx264 -preset veryslow -crf 0 -pix_fmt yuv420p"
@@ -98,8 +95,20 @@ mkdir -p "$WORK_DIR"
 
 # -------- Sanity checks -----------------------------------------------------
 echo "===== Sanity checks ====="
-for f in "$BICYCLE_PLY" "$BICYCLE_TRAJ" "$ROOM_PLY" "$ROOM_TRAJ" \
-         "$SEG_SCRIPT" "$RENDER_SCRIPT" "$ORBIT_SCRIPT"; do
+if [[ "$SKIP_SEG" -eq 0 ]]; then
+    if [[ -z "${YOLO_MODEL:-}" || ! -f "$YOLO_MODEL" ]]; then
+        echo "ERROR: YOLO_MODEL must name an existing local weights file (expected: ${YOLO_MODEL:-<set YOLO_MODEL>})." >&2
+        exit 1
+    fi
+fi
+required_files=("$SEG_SCRIPT" "$RENDER_SCRIPT" "$ORBIT_SCRIPT")
+if [[ -z "$ONLY_SCENE" || "$ONLY_SCENE" == "bicycle" ]]; then
+    required_files+=("$BICYCLE_PLY" "$BICYCLE_TRAJ")
+fi
+if [[ -z "$ONLY_SCENE" || "$ONLY_SCENE" == "room" ]]; then
+    required_files+=("$ROOM_PLY" "$ROOM_TRAJ")
+fi
+for f in "${required_files[@]}"; do
     if [[ ! -f "$f" ]]; then
         echo "ERROR: missing file: $f" >&2
         exit 1
@@ -111,13 +120,9 @@ if ! command -v "$FFMPEG" >/dev/null 2>&1 && [[ ! -x "$FFMPEG" ]]; then
     echo "ERROR: ffmpeg binary '$FFMPEG' not found." >&2
     exit 1
 fi
-if ! "$FFMPEG" -hide_banner -filters 2>/dev/null | grep -q libvmaf; then
+if ! "$FFMPEG" -hide_banner -filters 2>/dev/null | grep libvmaf >/dev/null; then
     echo "ERROR: '$FFMPEG' is installed but lacks libvmaf support." >&2
-    echo "  Quick fix (no compilation):" >&2
-    echo "    cd /tmp" >&2
-    echo "    wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz" >&2
-    echo "    tar xf ffmpeg-release-amd64-static.tar.xz" >&2
-    echo "    FFMPEG_BIN=\"\$(pwd)/ffmpeg-*-amd64-static/ffmpeg\" $(basename "$0")" >&2
+    echo "  Set FFMPEG_BIN to an installed ffmpeg with libvmaf support." >&2
     exit 1
 fi
 echo "  ffmpeg+libvmaf OK ($FFMPEG)"
@@ -148,7 +153,7 @@ run_segmentation_bicycle () {
         --lateral_offsets "0" \
         --fov_scale 0.4 \
         --detector yolo \
-        --yolo_model "yolo26x.pt" \
+        --yolo_model "$YOLO_MODEL" \
         --iou_threshold 0.2 \
         --yolo_conf 0.55 \
         --mask_pad 2 \
@@ -173,6 +178,7 @@ run_segmentation_room () {
         --lateral_offsets "0" \
         --fov_scale 0.7 \
         --detector yolo \
+        --yolo_model "$YOLO_MODEL" \
         --iou_threshold 0.2 \
         --yolo_conf 0.75 \
         --mask_pad 3 \
@@ -200,15 +206,19 @@ process_run () {
     local render_dir="$WORK_DIR/${tag}/render"
     local mp4_dir="$WORK_DIR/${tag}/mp4"
     local vmaf_dir="$WORK_DIR/${tag}/vmaf"
-    mkdir -p "$seg_dir" "$render_dir" "$mp4_dir" "$vmaf_dir"
+    mkdir -p "$seg_dir" "$mp4_dir" "$vmaf_dir"
 
     echo "============================================================"
     echo " RUN: ${tag}    target_class=${target_class}"
     echo "============================================================"
 
     # ---- Step 1: segmentation (idempotent) -------------------------------
-    if [[ $SKIP_SEG -eq 1 && -f "$seg_dir/clusters_catalog.json" ]]; then
-        echo "[$tag] step 1: SKIPPED (clusters_catalog.json exists)"
+    if [[ $SKIP_SEG -eq 1 ]]; then
+        if [[ ! -f "$seg_dir/clusters_catalog.json" || ! -f "$seg_dir/manifest.json" ]]; then
+            echo "ERROR: --skip-seg requires existing segmentation catalog and manifest in $seg_dir" >&2
+            exit 1
+        fi
+        echo "[$tag] step 1: SKIPPED (existing segmentation)"
     else
         echo "[$tag] step 1: running segmentation (rank=$rank)..."
         if [[ "$scene_name" == "bicycle" ]]; then
