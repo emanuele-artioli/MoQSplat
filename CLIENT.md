@@ -58,7 +58,12 @@ scene; `--max-scene-gib` is an aggregate payload safety limit, not an RSS limit.
 `--native-cache-mib` (default 128) targets the native origin cache. Active
 downloads reserve capacity; a cold layer larger than the available capacity
 fails with a suggested minimum. Use smaller spatial groups or a larger native
-cache for large semantic layers. This target excludes SDK/QUIC and process
+cache for large semantic layers. For the tested Bicycle semantic outputs, use
+`--native-cache-mib 512` for live playback; their background layers exceed
+the default 128 MiB target. The finite diagnostic subscriber already uses
+4 GiB. Large prepared semantic layers need a whole completed layer before
+the first usable image; small spatial groups give earlier partial coverage.
+This target excludes SDK/QUIC and process
 overhead and is not an exact whole-process RAM cap.
 
 `--cpu-cache-mib` (default 128) bounds the LRU of decoded arrays. Decoding the
