@@ -1,0 +1,6 @@
+scene,rank_method,level,layer_name,cumulative_pct,cumulative_bytes,cumulative_kb,n_gaussians,n_frames,vmaf_mean,vmaf_min,vmaf_harmonic_mean
+bicycle,opacity,0,base,20.0,360198305,351756.16,1232697,4,70.9639,38.3045,63.7405
+bicycle,opacity,1,enh1,40.0,720396114,703511.83,2465024,4,92.128,68.5121,89.7257
+bicycle,opacity,2,enh2,60.0,1080594171,1055267.75,3690923,4,97.7351,90.9405,97.5718
+bicycle,opacity,3,enh3,80.0,1440791980,1407023.42,4912302,4,99.3894,97.5575,99.3781
+bicycle,opacity,4,enh4_full,100.0,1800990285,1758779.58,6131954,4,99.357,97.4282,99.3445

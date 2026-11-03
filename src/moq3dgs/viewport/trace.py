@@ -9,15 +9,15 @@ client sends to the server.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator, List
 
 import numpy as np
 
 from moq3dgs.models import ViewportUpdate
 
 
-def load_trace(path: str | Path) -> List[dict]:
+def load_trace(path: str | Path) -> list[dict]:
     """Load a movement trace JSON file.
 
     Expected format — a JSON array of frame objects::
@@ -52,7 +52,7 @@ def load_trace(path: str | Path) -> List[dict]:
 
 
 def replay_trace(
-    frames: List[dict],
+    frames: list[dict],
     client_id: str = "client-0",
 ) -> Iterator[ViewportUpdate]:
     """Yield one :class:`ViewportUpdate` per frame in the trace.
@@ -73,15 +73,16 @@ def replay_trace(
             camera_position=frame["camera_position"],
             view_matrix=frame["view_matrix"],
             fov=frame["fov"],
+            fov_angles=frame.get("fov_angles"),
         )
 
 
-def camera_forward_from_view_matrix(view_matrix: List[List[float]]) -> np.ndarray:
+def camera_forward_from_view_matrix(view_matrix: list[list[float]]) -> np.ndarray:
     """Extract the world-space forward direction from a 4×4 view matrix.
 
     The view matrix transforms world → camera.  The camera looks along -Z
     in camera space, so the world-space forward direction is the negated
-    third row (or column, depending on convention) of the rotation part.
+    third row of the world-to-camera rotation part.
 
     We assume **row-major** layout matching the OpenGL convention used in
     the original 3DGS code.
@@ -95,7 +96,7 @@ def camera_forward_from_view_matrix(view_matrix: List[List[float]]) -> np.ndarra
     vm = np.asarray(view_matrix, dtype=np.float64)
     # The inverse rotation's third column gives the camera forward.
     # For an orthogonal rotation R, R^-1 = R^T.
-    forward = -vm[:3, 2]  # third column of rotation part
+    forward = -vm[2, :3]  # R.T @ camera-forward, for world-to-camera R
     norm = np.linalg.norm(forward)
     if norm < 1e-12:
         return np.array([0.0, 0.0, -1.0])

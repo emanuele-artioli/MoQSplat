@@ -1,0 +1,27 @@
+{
+  "manifest": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/inputs.json",
+  "sha256": "638183a70501192cf61de132e7b40fcc9bd7b6ddac62ad16270ac56374a1ef4f",
+  "inputs": {
+    "scene": {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle.ply",
+      "sha256": "64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227",
+      "gaussians": 6131954,
+      "unique_exact_xyz": 6131950
+    },
+    "trace": {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle_trace_openxr_v1.json",
+      "sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499"
+    },
+    "weights": {
+      "path": "/home/itec/emanuele/Models/YOLO/yolo26x.pt",
+      "sha256": "9fdd44a31c504547ffb81d2c6d9e6dac3493c8eaa8b0398d3f43bae6c7003e92",
+      "bytes": 118667365
+    },
+    "publisher_camera": {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/publisher-camera.json",
+      "sha256": "bffcecf53b8e1cc6d88ea0773ed26444744ed6f0ef63b69eb39fdc738b809906",
+      "provenance": "first frame of public publisher/rd_workdir/bicycle_opacity/cluster_orbit_traj.json",
+      "source_json_sha256": "bf1cc7b27f716ff4348c2f061c811e8d4af30bb21f3dfaeee290eba0088b0960"
+    }
+  }
+}

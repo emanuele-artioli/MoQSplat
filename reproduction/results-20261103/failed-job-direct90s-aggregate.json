@@ -1,0 +1,121 @@
+{
+  "job": "20261103T161225Z-f5903422",
+  "stage": "FAILED smoke",
+  "archive": "/home/itec/emanuele/Datasets/pointstream-data/jobs/fleet/inbox/20261103T161225Z-f5903422/smoke/partial.tar",
+  "staging": {
+    "local_root": "/local/users/emanuele/pointstream",
+    "inputs": [
+      {
+        "name": "source",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/source-concurrent.tar.gz",
+        "sha256": "7b19431c305b869b3b15a4a8436e8ae623be4d943cee12247265b0fb24bb74af",
+        "extract": false,
+        "mode": "local-copy",
+        "path": "/local/users/emanuele/pointstream/cache/7b19431c305b869b3b15a4a8436e8ae623be4d943cee12247265b0fb24bb74af/source-concurrent.tar.gz",
+        "seconds": 0.0032024383544921875
+      },
+      {
+        "name": "scene",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle.ply",
+        "sha256": "64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227/bicycle.ply",
+        "seconds": 1.0276374816894531
+      },
+      {
+        "name": "trace",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-reproduction-20261101/inputs/bicycle_trace_openxr_v1.json",
+        "sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499/bicycle_trace_openxr_v1.json",
+        "seconds": 0.0021657943725585938
+      },
+      {
+        "name": "publisher_camera",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/moqsplat-gap-closure-20261103/publisher-camera.json",
+        "sha256": "bffcecf53b8e1cc6d88ea0773ed26444744ed6f0ef63b69eb39fdc738b809906",
+        "extract": false,
+        "mode": "local-hit",
+        "path": "/local/users/emanuele/pointstream/cache/bffcecf53b8e1cc6d88ea0773ed26444744ed6f0ef63b69eb39fdc738b809906/publisher-camera.json",
+        "seconds": 5.316734313964844e-05
+      },
+      {
+        "name": "prior",
+        "source": "/home/itec/emanuele/Datasets/pointstream-data/jobs/fleet/inbox/20261103T154539Z-3d7be786/smoke/summary.json",
+        "sha256": "40bd034989e9d980c68925b769be3b42faba5a071b9544a3db1979222adc2ae2",
+        "extract": false,
+        "mode": "local-copy",
+        "path": "/local/users/emanuele/pointstream/cache/40bd034989e9d980c68925b769be3b42faba5a071b9544a3db1979222adc2ae2/summary.json",
+        "seconds": 0.0019519329071044922
+      }
+    ],
+    "environment": null,
+    "scratch": "/local/users/emanuele/pointstream/scratch/20261103T161225Z-f5903422-smoke",
+    "attempt": 1,
+    "restored_checkpoint": null,
+    "temporary_environment": {
+      "TMPDIR": "/local/users/emanuele/pointstream/temporary/20261103T161225Z-f5903422/smoke/tmp-4dc3c3e4d48b454ca0dc20c9e0946911",
+      "TMP": "/local/users/emanuele/pointstream/temporary/20261103T161225Z-f5903422/smoke/tmp-4dc3c3e4d48b454ca0dc20c9e0946911",
+      "TEMP": "/local/users/emanuele/pointstream/temporary/20261103T161225Z-f5903422/smoke/tmp-4dc3c3e4d48b454ca0dc20c9e0946911",
+      "PYTHONPYCACHEPREFIX": "/local/users/emanuele/pointstream/python-cache"
+    },
+    "partial": {
+      "path": "/home/itec/emanuele/Datasets/pointstream-data/jobs/fleet/inbox/20261103T161225Z-f5903422/smoke/partial.tar",
+      "sha256": "ae0830a40424eafab5750b13ed99b1e3c3c8e25c33036ce76ca3e750142c9793",
+      "bytes": 2936330240,
+      "members": 1305,
+      "partial": true
+    },
+    "checkpoint": null,
+    "salvaged": {
+      "reason": "failed",
+      "time": 1793722534.5464609
+    }
+  },
+  "journals": {
+    "publish/direct-0/frames.jsonl": {
+      "sha256": "890116f1353cd717388df5f34ccc9bbe17a009426da339263884f6f57387a01e",
+      "frames": 990,
+      "first_seconds": 1.738903240300715,
+      "last_seconds": 90.0764382481575,
+      "received_layers_last": 640,
+      "total_layers": 640,
+      "evictions": 0,
+      "promotions": 640,
+      "reconnects": 0,
+      "render_thread_ids": [
+        "126053330712128"
+      ],
+      "black_frames": 0,
+      "reserved_over_budget": 0,
+      "input_to_render_ms": [
+        53.52421570569277,
+        127.85325106233358,
+        44.37921568751335
+      ]
+    },
+    "publish/direct-1/frames.jsonl": {
+      "sha256": "02b3b78dd522a0c97f73f60e23a7df25cb612e47e4ae43bb89f8390afa2c28e7",
+      "frames": 960,
+      "first_seconds": 1.5840704450383782,
+      "last_seconds": 90.02711684908718,
+      "received_layers_last": 640,
+      "total_layers": 640,
+      "evictions": 0,
+      "promotions": 640,
+      "reconnects": 0,
+      "render_thread_ids": [
+        "129412724942400"
+      ],
+      "black_frames": 0,
+      "reserved_over_budget": 0,
+      "input_to_render_ms": [
+        1268.6103349551558,
+        292.8750952705741,
+        44.459279626607895
+      ]
+    }
+  }
+}

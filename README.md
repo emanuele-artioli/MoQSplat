@@ -1,135 +1,66 @@
-# 3DGS-MoQ: Viewport-Aware 3D Gaussian Splatting over Media-over-QUIC
+# MoQSplat
 
-Streams pre-trained 3D Gaussian Splatting scenes to clients over Media-over-QUIC
-(MoQ), with viewport-aware spatial partitioning and dynamic priority scheduling.
+Viewport-aware delivery of pretrained 3D Gaussian Splatting scenes over
+Media-over-QUIC (MoQ). The native Python interface uses pinned Rust MoQ/QUIC
+libraries; the renderer uses CUDA gsplat.
 
-## Architecture
+Start with [REPRODUCTION.md](REPRODUCTION.md) for setup, input provenance and
+commands. [CLIENT.md](CLIENT.md) covers the live client, memory limits, recovery
+and an independent-network test recipe. The original semantic publisher and
+five-level VMAF pipeline are in [publisher/](publisher/README.md).
 
-```
-Server                              Client
-┌──────────────────────┐            ┌──────────────────────┐
-│  Scene Loader (PLY)  │            │  Trace Replayer      │
-│  Spatial Partitioner │──manifest─>│  Frustum Calculator  │
-│  MoQ Publisher       │──clusters─>│  Subscription Mgr    │
-│  Priority Scheduler  │<─viewport──│  Splat Cache         │
-└──────────────────────┘            │  GPU Renderer        │
-                                    │  Disk Writer         │
-                                    └──────────────────────┘
-```
+The modern native path is an independent functional reproduction. The paper's
+customized Rust subgroup implementation and exact end-to-end experiment
+artifacts have not been recovered. It is not an exact Table-I reproduction.
 
-### MoQ Transport Mapping
+## Native live client
 
-| MoQ Concept   | 3DGS Mapping                                      |
-|---------------|----------------------------------------------------|
-| **Broadcast** | Entire 3DGS scene                                  |
-| **Track**     | Spatial volume (Octree leaf / e.g., Room)          |
-| **Group**     | Density cluster within a Track (K-Means / Item)    |
-| **Subgroup**  | Importance Tier (LoD based on splat scale/volume)  |
-| **Object**    | Chunked payload (SH bands split into Objects)      |
+Install into an isolated environment with a compatible Torch/CUDA toolchain:
 
-**Subgroup (Importance Tier) Breakdown:**
-*   **Subgroup 0**: Large Splats (Geometry + Opacity + SH0)
-*   **Subgroup 1**: Medium Splats (Geometry + Opacity + SH0)
-*   **Subgroup 2**: Small/Fine Splats (Geometry + Opacity + SH0)
-*   **Subgroup 3**: Large Splats (SH1-SH3)
-*   **Subgroup 4**: Medium/Small Splats (SH1-SH3)
-
-*Note: Base geometry (Subgroups 0-2) always holds priority over reflections (Subgroups 3-4).*
-
-## Setup
-
-```bash
-# Create conda environment (CUDA + PyTorch)
-conda env create -f environment.yaml
-conda activate 3dgs_moq
-
-# Or install directly via pip (requires PyTorch pre-installed)
-pip install -e ".[dev]"
+```sh
+python -m pip install -e '.[dev,reproduce,publisher]'
+python -m pip check
+python -m pytest tests -q
 ```
 
-## Quick Start
+In separate terminals, with an actual trained scene and corrected camera trace:
 
-The server loads the PLY, partitions it into 3D clusters (using K-means), and starts an MoQ/QUIC publisher.
+```sh
+python scripts/run_moq_reproduction.py relay --bind 127.0.0.1:4433 --duration 900
 
-> [!NOTE]
-> On this machine, GPU 0 is often occupied by other processes. It is recommended to use `cuda:1` for rendering.
+python scripts/run_moq_reproduction.py publish \
+  --relay https://127.0.0.1:4433 --insecure \
+  --scene /absolute/path/bicycle.ply --duration 900
 
-```bash
-# Start server
-moq3dgs-server --scene assets/bicycle.ply --clusters 64 --port 4433
-
-# Start client (points to GPU 1 by default)
-moq3dgs-client --trace assets/bicycle_trace.json --device cuda:1
+python scripts/run_moq_reproduction.py subscribe \
+  --relay https://127.0.0.1:4433 --insecure \
+  --trace /absolute/path/corrected-bicycle-trace.json --device cuda:0 \
+  --live --viewer-port 8765 --gpu-memory-mib 2048 \
+  --cache /absolute/path/reusable-layer-cache \
+  --output /absolute/path/new-client-run --duration 300
 ```
 
-## Testing
+Open `http://127.0.0.1:8765`. Drag to look, use W/A/S/D and Q/E to move,
+and return to the recorded trace with the button. Rendering runs on the native
+client's GPU; the local browser displays its JPEG stream. A requested frame
+rate is a target, not a guarantee. This is not a WebGPU or VR renderer.
 
-```bash
-pytest tests/ -v
-```
+MoQ priorities decide which useful data arrives first at the available
+bandwidth. Filling the link is expected. The client retains verified completed
+layers on disk, controls CPU/GPU residency and retries interrupted delivery.
+It may eventually fetch the complete static scene. Quality at a fixed
+bandwidth needs measured comparisons; minimum transferred bytes is not the
+objective.
 
-## Project Structure
+## Other paths and evidence
 
-```
-src/moq3dgs/
-├── models.py           # Pydantic data contracts
-├── decorators.py       # @network_bound, @gpu_bound
-├── scene/
-│   ├── loader.py       # PLY scene loading
-│   ├── clustering.py   # K-means + octree partitioning
-│   └── lod.py          # LoD splitting (base / enhancement)
-├── viewport/
-│   ├── frustum.py      # View frustum culling
-│   ├── priority.py     # Dynamic priority (0-255)
-│   └── trace.py        # Camera trace replay
-├── transport/
-│   ├── manifest.py     # MoQ manifest generation
-│   ├── protocol.py     # Binary wire protocol
-│   ├── server.py       # Async MoQ publisher
-│   └── client.py       # Async MoQ subscriber
-├── render/
-│   ├── cache.py        # Persistent splat cache
-│   ├── rasterizer.py   # GPU rasterisation wrapper
-│   └── writer.py       # Frame-to-disk writer
-├── server_app.py       # Server entry point
-└── client_app.py       # Client entry point
-```
+The older `moq3dgs-server`, `moq3dgs-client` and `scripts/run_e2e.py` entrypoints
+remain TCP simulators. Use the native commands above to test MoQ/QUIC.
 
-## Adaptive Bitrate & Budget Management
+[The November 1 GPU report](reproduction/VALIDATION-20261101.md) records exact
+full-scene transport and source-render comparison, including failed attempts.
+[The November 3 client report](reproduction/VALIDATION-20261103.md) records
+clean installation, semantic publisher/VMAF, continuous playback, memory
+eviction and concurrent recovery tests, together with failures and limits.
 
-The system implements a multi-layer adaptive strategy to ensure visual fidelity and real-time performance:
-
-### 1. Spatial-Aware LoD (Server-Side)
-Gaussians are partitioned into 3 **Subsets** (Large, Medium, Small) using **Weighted Farthest-Point Sampling (WFPS)**. Each subset is available in 2 **Quality Levels**:
-- **Quality 0 (Base)**: Essential geometry + DC color (SH0). Self-contained.
-- **Quality 1 (Full)**: Adds high-frequency detail (SH1-3).
-
-### 2. Breadth-First ABR (Client-Side)
-The client follows a "fill-then-upgrade" strategy:
-- **Base Coverage**: Subscribes to Quality 0 for all visible subsets (Large → Medium → Small).
-- **Detail Enhancement**: Once Quality 0 is received for visible clusters, it upgrades to Quality 1.
-- **Persistence**: Subscriptions are maintained as long as clusters are near the viewport to prevent "popping".
-
-### 3. Adaptive Rendering Budget
-To maintain a target of **24 FPS (40ms/frame)**, the client dynamically manages a **Gaussian Budget**:
-- **Halo Culling**: Visibility testing uses a 20% margin (halo) to prevent edge popping.
-- **Priority Ranking**: Visible clusters are ranked by Distance, Centeredness, and Layer type.
-- **Dynamic Feedback**: If render time exceeds 40ms, the budget (max splats) is reduced. If under 30ms, it is increased to allow higher detail.
-
-## Priority Scheme
-
-Priority `0` (highest) → `255` (lowest), computed dynamically:
-
-1. **Distance to camera** — closer = higher priority
-2. **Frustum position** — centre = highest, periphery = medium, behind = lowest
-3. **Importance Tier (Subgroup)** — Subgroups 0-2 (Base Geometry) > Subgroups 3-4 (SH Reflections). Priorities ebb and flow based on the viewport, but geometry always maintains a baseline priority over reflections.
-
-## Next Steps
-
-- [ ] Implement occlusion culling for indoor scenes (Track-level visibility based on portals).
-- [ ] Transition from TCP placeholder to full QUIC transport using `aioquic`.
-- [ ] Add support for dynamic LoD transitions using alpha-blending to prevent "popping" between tiers.
-
-## License
-
-MIT
+MIT license.

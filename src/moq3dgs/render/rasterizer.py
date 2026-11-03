@@ -1,9 +1,9 @@
 """Minimal GPU rasterisation wrapper.
 
 This module wraps a simple differentiable Gaussian splatting rasteriser.
-If ``diff_gaussian_rasterization`` or ``gsplat`` is available it will
-use that; otherwise it falls back to a basic CPU depth-sorted alpha
-compositing renderer that is slow but correct.
+CUDA requests require ``gsplat`` and propagate native failures. Explicit CPU
+requests use a basic depth-sorted DC-color renderer for debugging; it is not
+the full-SH renderer used for fidelity experiments.
 
 All rendering output is written to disk (headless requirement).
 """
@@ -17,6 +17,7 @@ import torch
 import structlog
 
 from moq3dgs.decorators import gpu_bound
+from moq3dgs.viewport.frustum import camera_intrinsics_from_fov
 
 logger = structlog.get_logger(__name__)
 
@@ -36,6 +37,7 @@ def render_gaussians(
     fov_y_deg: float = 60.0,       # vertical FOV – used to build intrinsic K
     bg_color: Optional[torch.Tensor] = None,
     device: str = "cuda:0",
+    fov_angles: tuple[float, float, float, float] | None = None,
 ) -> torch.Tensor:
     """Render Gaussians to an image tensor.
 
@@ -66,28 +68,24 @@ def render_gaussians(
 
     # Build pixel-space camera intrinsic matrix K from FOV.
     # gsplat requires K (not a GL projection matrix).
-    fov_rad = np.radians(fov_y_deg)
-    fy_px = (image_height / 2.0) / np.tan(fov_rad / 2.0)
-    fx_px = fy_px  # square pixels
-    K = torch.tensor(
-        [[fx_px, 0.0, image_width / 2.0],
-         [0.0, fy_px, image_height / 2.0],
-         [0.0, 0.0, 1.0]],
-        dtype=torch.float32,
-    )
+    K = torch.from_numpy(camera_intrinsics_from_fov(
+        image_width, image_height, fov_y_deg, fov_angles,
+    ))
+    fx_px, fy_px = float(K[0, 0]), float(K[1, 1])
 
     # Try hardware-accelerated rasteriser first
     try:
+        if torch.device(device).type == "cpu":
+            raise ImportError("Explicit CPU debug rendering requested")
         return _render_gsplat(
             means, opacities, sh_coeffs, scales, rotations,
             view_matrix, K,
             image_width, image_height, bg_color, device,
         )
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        if torch.device(device).type == "cuda":
+            raise RuntimeError("Requested CUDA gsplat rendering failed; no CPU fallback") from e
         logger.debug("gsplat_failed", error=str(e))
-        pass
 
     # Fallback: naive CPU renderer (uses GL proj for NDC, K for focal lengths)
     logger.warning("gpu_rasteriser_unavailable_falling_back_to_cpu")
@@ -119,25 +117,33 @@ def _render_gsplat(
     o = torch.sigmoid(opacities.to(device)).squeeze(-1)
     s = torch.exp(scales.to(device))
     r = rotations.to(device)
-    vm = view_matrix.to(device)
+    # Trace/culling use OpenGL (-Z forward, +Y up). gsplat uses OpenCV
+    # (+Z forward, +Y down). Convert the camera axes, never the world scene.
+    camera_axes = torch.diag(torch.tensor([1.0, -1.0, -1.0, 1.0], device=device))
+    vm = camera_axes @ view_matrix.to(device)
     Ks = K.to(device).unsqueeze(0)  # (1, 3, 3)
 
-    # gsplat expects specific format; convert SH DC to RGB colors
+    # Preserve every transmitted SH coefficient. Passing DC-derived RGB here
+    # made all enhancement coefficients irrelevant to the rendered image.
     sh = sh_coeffs.to(device)
     if sh.dim() == 1:
         sh = sh.reshape(len(m), -1)
     
-    SH_C0 = 0.28209479177387814
-    colors = torch.clamp(sh[:, :3] * SH_C0 + 0.5, 0.0, 1.0)
+    coefficients = sh.reshape(len(m), -1, 3)
+    degree = int(np.sqrt(coefficients.shape[1])) - 1
+    if (degree + 1) ** 2 != coefficients.shape[1]:
+        raise ValueError("SH coefficient count must be a complete square degree")
 
     outputs = gsplat.rasterization(
         means=m, quats=r, scales=s, opacities=o,
-        colors=colors, viewmats=vm.unsqueeze(0),
+        colors=coefficients, sh_degree=degree, viewmats=vm.unsqueeze(0),
         Ks=Ks,
         width=w, height=h,
     )
-    rendered = outputs[0]  # (1, H, W, 3)
-    img = rendered[0].clamp(0, 1) * 255
+    rendered, alpha = outputs[:2]  # (1, H, W, 3), (1, H, W, 1)
+    # The pinned packed rasterizer rejects per-camera background tensors.
+    # Compose its premultiplied colors using the returned alpha instead.
+    img = (rendered[0] + (1 - alpha[0]) * bg.reshape(1, 1, 3)).clamp(0, 1) * 255
     return img.byte().cpu()
 
 

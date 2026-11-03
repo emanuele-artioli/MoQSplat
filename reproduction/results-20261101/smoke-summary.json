@@ -1,0 +1,517 @@
+{
+  "valid": true,
+  "frames_rendered": 2,
+  "device_type": "cuda",
+  "transport": "QUIC",
+  "versions": {
+    "moq-rs": "0.5.2",
+    "moq-ffi": "0.4.20"
+  },
+  "wire_roundtrip_exact": true,
+  "original_arrays_exact": true,
+  "progressive_images": [
+    {
+      "file": "progressive-00000.png",
+      "splats": 3679173,
+      "nonblack_pixels": 76800,
+      "mean_pixel": 139.1916623263889,
+      "transfers_pending_at_start": 2,
+      "seconds_since_connect": 12.25565615389496,
+      "completed_layers": 3
+    }
+  ],
+  "final_images": [
+    {
+      "file": "frame-00000.png",
+      "splats": 6131954,
+      "nonblack_pixels": 76800,
+      "mean_pixel": 139.16963975694443
+    }
+  ],
+  "progressive_rendering_overlapped_transfer": true,
+  "memory_policy": "verified completed payloads retained in RAM; GPU watermark swapping absent",
+  "mapping": "modern MoQ layer tracks; not recovered custom subgroup protocol",
+  "relay_validation": "external URL; inspect relay transport log separately",
+  "trace_sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499",
+  "input_camera_convention": "opengl",
+  "scene": {
+    "attributes": "raw float32 npz containers",
+    "group_centroids": {
+      "scene/0": [
+        -1.1259487025979884,
+        -2.373866562185786,
+        -0.5306860471544133
+      ]
+    },
+    "grouping": "single group transport validation; semantic grouping not reproduced",
+    "priority_policy": {
+      "angle_weight": 0.5,
+      "distance_weight": 0.5,
+      "formula": "utility=.5*max(0,1-min(distance,100)/100)+.5*max(0,cos(theta))",
+      "interval_seconds": 0.1,
+      "maximum_distance": 100.0,
+      "quantization": "bin=min(41,floor(utility*42)); paper_priority=(41-bin)*6+subgroup",
+      "tie_break": "quantized subscriber viewport utility first, publisher layer index second"
+    },
+    "pruning": "opacity",
+    "scene_sha256": "64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227",
+    "scene_splats": 6131954,
+    "selected_splats": 6131954,
+    "sh_degree": 3,
+    "source_array_hashes": {
+      "layers/scene/0/0": {
+        "means": {
+          "dtype": "<f4",
+          "sha256": "f6083f97716d6ea96bd1884dfeb6a202f5206b5ad5b3622871b89436168fd5ba",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "opacities": {
+          "dtype": "<f4",
+          "sha256": "39c4cfcb74779ffd4c127b85710b7cf690d466dcde3efec4eee03b64549ff680",
+          "shape": [
+            1226391,
+            1
+          ]
+        },
+        "rotations": {
+          "dtype": "<f4",
+          "sha256": "334bae7919d2865cb94f5c29cd0e911fc9a37e049fb96e44b4ca18cddff1f3ce",
+          "shape": [
+            1226391,
+            4
+          ]
+        },
+        "scales": {
+          "dtype": "<f4",
+          "sha256": "6431c8cf1bad0e89147c4d31f36c6868c03e66d6d506845a0976fa9324e6d194",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "sh_dc": {
+          "dtype": "<f4",
+          "sha256": "bf5c9bd1e810b2149045ef213334d33709f96fb79ca35ccc8f680c3c4600ba89",
+          "shape": [
+            1226391,
+            1,
+            3
+          ]
+        },
+        "sh_rest": {
+          "dtype": "<f4",
+          "sha256": "51928a0689eea7df00b8380149b76fc9d43f46ba90f0d18d45f62f00e916e9aa",
+          "shape": [
+            1226391,
+            15,
+            3
+          ]
+        }
+      },
+      "layers/scene/0/1": {
+        "means": {
+          "dtype": "<f4",
+          "sha256": "e8c5a95fd22e98493de874bd3c6f2716097a0003bafaade58a7665a230a3a2f7",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "opacities": {
+          "dtype": "<f4",
+          "sha256": "9a96f805acb8096cd38fb80f16b3f9a3c19c40c814f9c08370e91678950f1f08",
+          "shape": [
+            1226391,
+            1
+          ]
+        },
+        "rotations": {
+          "dtype": "<f4",
+          "sha256": "63cb903e75f49cede959fa20036714993b273db2e6449138a8a73f3c81f07323",
+          "shape": [
+            1226391,
+            4
+          ]
+        },
+        "scales": {
+          "dtype": "<f4",
+          "sha256": "3fa46f329dcc2766ed6fed87f0402106975016c321b0db0745a37ab960f49fe8",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "sh_dc": {
+          "dtype": "<f4",
+          "sha256": "7858ab127858598fd798eecebd3a542fc973fcaef8c59bd4d1238520d8179683",
+          "shape": [
+            1226391,
+            1,
+            3
+          ]
+        },
+        "sh_rest": {
+          "dtype": "<f4",
+          "sha256": "ef578e4ed06d52a621fa97eaa41e9ab923796ba513430beeef902fffc9682cb4",
+          "shape": [
+            1226391,
+            15,
+            3
+          ]
+        }
+      },
+      "layers/scene/0/2": {
+        "means": {
+          "dtype": "<f4",
+          "sha256": "659c660be81b7fb370d4e6c377c6dfa5944b7940778480f806503bad15317858",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "opacities": {
+          "dtype": "<f4",
+          "sha256": "bfee2bf5a180d5dcb20bc50f9304904cc94923c981b512a3ff815d33ae28a7ed",
+          "shape": [
+            1226391,
+            1
+          ]
+        },
+        "rotations": {
+          "dtype": "<f4",
+          "sha256": "5dbb6741fe8b2b627ee2bb24334f6dfec9fdfb003f5225526051fc046a661765",
+          "shape": [
+            1226391,
+            4
+          ]
+        },
+        "scales": {
+          "dtype": "<f4",
+          "sha256": "1fe0528cbafc26f4b6102098b339d39737ebfb4ba705f01da1a9a0ebcd5aabf6",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "sh_dc": {
+          "dtype": "<f4",
+          "sha256": "218467203d617a17fd4f2fd9ff3e3f295d3a8137b808bda48f8239f772b3270d",
+          "shape": [
+            1226391,
+            1,
+            3
+          ]
+        },
+        "sh_rest": {
+          "dtype": "<f4",
+          "sha256": "fa2b52cb911009633eee32b66a8717e621eec33b3bc0eade121e8b0990577de2",
+          "shape": [
+            1226391,
+            15,
+            3
+          ]
+        }
+      },
+      "layers/scene/0/3": {
+        "means": {
+          "dtype": "<f4",
+          "sha256": "5afdbed32a176ac79273f1e2faf62dddf1898b126f4d2301ed8c9dfccf5d9468",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "opacities": {
+          "dtype": "<f4",
+          "sha256": "f7acde7f442b316c273f0136e49710a3e85a66de3542f1858df061614a80b520",
+          "shape": [
+            1226391,
+            1
+          ]
+        },
+        "rotations": {
+          "dtype": "<f4",
+          "sha256": "90004599de4dbfafd24e8ea6c5dee9178fa26ab8ae22cd7141ae05f3edf5ddff",
+          "shape": [
+            1226391,
+            4
+          ]
+        },
+        "scales": {
+          "dtype": "<f4",
+          "sha256": "117c3769b51b6348676b383c2d26a4591a3f076f54938538891530ed4bcd6a2b",
+          "shape": [
+            1226391,
+            3
+          ]
+        },
+        "sh_dc": {
+          "dtype": "<f4",
+          "sha256": "98d51493f014432c64472f5dd99473eed0e71dc94691e6055ad5b643c12189ad",
+          "shape": [
+            1226391,
+            1,
+            3
+          ]
+        },
+        "sh_rest": {
+          "dtype": "<f4",
+          "sha256": "978b32720200ce712a295b2cbc9578bd4c3b3f93b3073285ccbb011df59bf665",
+          "shape": [
+            1226391,
+            15,
+            3
+          ]
+        }
+      },
+      "layers/scene/0/4": {
+        "means": {
+          "dtype": "<f4",
+          "sha256": "8289236596b8f4e6f38a27fc959dca803fc760f5c6a061618c03dce543b6de00",
+          "shape": [
+            1226390,
+            3
+          ]
+        },
+        "opacities": {
+          "dtype": "<f4",
+          "sha256": "56b04139d970ac0f74e239e51f0f5d196282961df42234f27d27b0ca7a738d8a",
+          "shape": [
+            1226390,
+            1
+          ]
+        },
+        "rotations": {
+          "dtype": "<f4",
+          "sha256": "bad15d91ee656497d61c3e5bc2ae6081a4e417ea51be3870e4d00557cf32425a",
+          "shape": [
+            1226390,
+            4
+          ]
+        },
+        "scales": {
+          "dtype": "<f4",
+          "sha256": "4dcd9b9c6aa6e410c8c9eed163063419d36f7d95b0fae09c8d1b4e47bffbe01d",
+          "shape": [
+            1226390,
+            3
+          ]
+        },
+        "sh_dc": {
+          "dtype": "<f4",
+          "sha256": "4af63aa8e7cb909d2eb4c16f09e5690a923ec4847e29aee6d409141561697aa3",
+          "shape": [
+            1226390,
+            1,
+            3
+          ]
+        },
+        "sh_rest": {
+          "dtype": "<f4",
+          "sha256": "00898ee2900defd0e4734cea8314c0ec0646fa7d136bd69edc441f5f4568b781",
+          "shape": [
+            1226390,
+            15,
+            3
+          ]
+        }
+      }
+    }
+  },
+  "bytes_received_payload": 1447148624,
+  "layers_received": 5,
+  "payload_sha256": [
+    "4a260a4a4296d79553f417845a2630dd002c065d3114e0b7ab180b8db06b9046",
+    "fbf1a5e541526d353c5252fc7b4f1b50f7de16399ee1f2d8bc3250dbcd4b261d",
+    "b7af19eca7085154e3d8e0cc590b5bf164d5ee1c5cec506bf68e792d83e280e8",
+    "eccca4045a40a662fa75f7f805e35cd7d70cd5538457fabe16fe78b8883356fb",
+    "7c643bb45168b8ec32787afa2fbc6b7bfafdb6ee153d283b048c1a9cc63f1a4c"
+  ],
+  "cache_revisit_requests": 0,
+  "priority_updates": {
+    "changed": 46,
+    "unchanged": 357,
+    "pose_samples": 88
+  },
+  "quic_stats": {
+    "rtt_us": 897,
+    "bytes_sent": 3177920,
+    "bytes_received": 1488380044,
+    "bytes_lost": 0,
+    "packets_sent": 79742,
+    "packets_received": 1240382,
+    "packets_lost": 0
+  },
+  "wall_seconds": 14.853127953596413,
+  "oracle": {
+    "valid": true,
+    "command": [
+      "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/moqsplat/scripts/validate_reproduction.py",
+      "--scene",
+      "/local/users/emanuele/pointstream/cache/64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227/bicycle.ply",
+      "--trace",
+      "/local/users/emanuele/pointstream/cache/4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499/bicycle_trace_openxr_v1.json",
+      "--frames",
+      "1",
+      "--camera-convention",
+      "opengl",
+      "--device",
+      "cuda:0",
+      "--output",
+      "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/oracle"
+    ],
+    "camera_convention": "opengl",
+    "frames_requested": 1,
+    "frames": [
+      {
+        "index": 0,
+        "timestamp_ms": 0,
+        "fov": 95.97043068441288,
+        "path": "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/oracle/frame_0000.png",
+        "sha256": "087ec4f167016311903ee81c6cfd61d2e717a85d3b6ea1682fb0f614710e5bfb",
+        "min": 0,
+        "max": 255,
+        "mean": 139.1696319580078,
+        "std": 86.83639526367188,
+        "sample_count": 16384,
+        "sample_visible": 288,
+        "sample_z_negative_fraction": 0.119873046875,
+        "sample_z_positive_fraction": 0.880126953125,
+        "sample_z_quantiles": [
+          -28.189707301309333,
+          1.3635820954998477,
+          2.4409175924445954,
+          3.674002131022722,
+          23.33848896445687
+        ]
+      }
+    ],
+    "inputs": {
+      "scene": "/local/users/emanuele/pointstream/cache/64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227/bicycle.ply",
+      "scene_sha256": "64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227",
+      "trace": "/local/users/emanuele/pointstream/cache/4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499/bicycle_trace_openxr_v1.json",
+      "trace_sha256": "4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499"
+    },
+    "versions": {
+      "python": "3.12.14 (main, Sep  2 2026, 23:27:36) [GCC 15.3.0]",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "torch": "2.10.0+cu128",
+      "torch_cuda": "12.8",
+      "gsplat": "1.5.3",
+      "numpy": "2.5.4",
+      "pillow": "12.3.0",
+      "git_revision": "unavailable: Command '('git', 'rev-parse', 'HEAD')' returned non-zero exit status 128.",
+      "git_status": "unavailable: Command '('git', 'status', '--short')' returned non-zero exit status 128.",
+      "nvidia_smi": "0, GPU-dbbb295f-6156-1133-8658-841f3f5b17d0, NVIDIA RTX 6000 Ada Generation, 535.183.01\n1, GPU-ef96fc4f-134e-4c01-290e-9a6c8bbef553, NVIDIA RTX 6000 Ada Generation, 535.183.01"
+    },
+    "code_sha256": {
+      "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/moqsplat/src/moq3dgs/render/rasterizer.py": "e827d0cfe9e094984aee6cc60418cf9f22e36ababae272cedb48bdfeb91cdca7",
+      "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/moqsplat/scripts/validate_reproduction.py": "8be0c1880a30e9f3de698beb98effd25ffcfad7bad82578f596732634cfb0181"
+    },
+    "device_type": "cuda",
+    "gpu": {
+      "device": "cuda:0",
+      "name": "NVIDIA RTX 6000 Ada Generation",
+      "capability": [
+        8,
+        9
+      ],
+      "uuid": "dbbb295f-6156-1133-8658-841f3f5b17d0"
+    },
+    "gaussian_count": 6131954,
+    "wire_roundtrip_exact": true,
+    "wire": {
+      "first_n_gaussians": 16384,
+      "bytes": 3866691,
+      "sha256": "8e204b400cfd13a046575173806e4d47896069173a0383b94e77f23e7dc23015",
+      "attribute_bytes": {
+        "means": 196608,
+        "opacities": 65536,
+        "sh_coeffs": 3145728,
+        "scales": 196608,
+        "rotations": 262144
+      }
+    },
+    "trace_frame_count": 2893,
+    "first_trace_entry": {
+      "timestamp_ms": 0,
+      "camera_position": [
+        -2.033,
+        -0.206,
+        -0.335
+      ],
+      "view_matrix": [
+        [
+          0.5797626535916471,
+          -0.13364760848542911,
+          0.8037497012419337,
+          1.420382217319868
+        ],
+        [
+          0.4541442618950713,
+          -0.7660076822074198,
+          -0.4549562838196632,
+          0.6130673468183643
+        ],
+        [
+          0.6764822650211557,
+          0.6287849771943843,
+          -0.3834073519985041,
+          1.3763766871705538
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "fov": 95.97043068441288,
+      "fov_angles": [
+        -0.942,
+        0.698,
+        -0.942,
+        0.733
+      ]
+    },
+    "frames_rendered": 1,
+    "elapsed_seconds": 8.69135778490454,
+    "peak_cuda_memory_bytes": 1785148416
+  },
+  "legacy": {
+    "valid": true,
+    "transport": "TCP simulator",
+    "frames_rendered": 1,
+    "cache_entries": 24,
+    "clusters_received": 24,
+    "images": [
+      {
+        "path": "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/legacy/frames/output.mp4",
+        "frame_index": 0,
+        "mean": 130.11829427083333,
+        "nonblack_pixels": 76167
+      }
+    ]
+  },
+  "source_archive_sha256": "d64052cbee3e821d6dc83fb0fd767f883ec119c358165ce9bb011706a108d2c8",
+  "fleet_elapsed_seconds": 97.02590692602098,
+  "command": [
+    "/local/users/emanuele/moqsplat-reproduction-20261101/fast-env/bin/python",
+    "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/moqsplat/scripts/validate_reproduction.py",
+    "--scene",
+    "/local/users/emanuele/pointstream/cache/64d357cb25bd85f710f8551a18d830f8497277fbd8c5805adfd72ffe9ca78227/bicycle.ply",
+    "--trace",
+    "/local/users/emanuele/pointstream/cache/4f3567862ddf4e56ab439a262bd7535980422dd05fe360c1b92b762f3fd97499/bicycle_trace_openxr_v1.json",
+    "--frames",
+    "1",
+    "--camera-convention",
+    "opengl",
+    "--device",
+    "cuda:0",
+    "--output",
+    "/local/users/emanuele/pointstream/scratch/20261101T161843Z-425ac71f-smoke/oracle"
+  ]
+}

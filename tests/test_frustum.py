@@ -72,3 +72,17 @@ class TestAABBFrustum:
             frustum,
         )
         assert result == Visibility.OUTSIDE
+
+
+def test_translated_frustum_all_six_boundaries() -> None:
+    view = np.eye(4)
+    view[:3, 3] = [-3, 2, -4]
+    frustum = extract_frustum(projection_matrix_from_fov(90, 1, 1, 10) @ view)
+    camera = np.array([3., -2., 4.])
+    def classify(offset: tuple[float, float, float]) -> Visibility:
+        center = camera + np.array(offset)
+        return check_aabb_frustum(center - 0.05, center + 0.05, frustum)
+    assert classify((0, 0, -5)) == Visibility.INSIDE
+    for center in [(-7, 0, -5), (7, 0, -5), (0, -7, -5),
+                   (0, 7, -5), (0, 0, -0.5), (0, 0, -11)]:
+        assert classify(center) == Visibility.OUTSIDE

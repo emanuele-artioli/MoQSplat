@@ -9,7 +9,7 @@ from __future__ import annotations
 from enum import IntEnum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 # ---------------------------------------------------------------------------
@@ -49,6 +49,19 @@ class ViewportUpdate(BaseModel):
         ..., description="4×4 view matrix (row-major)"
     )
     fov: float = Field(..., gt=0, lt=180, description="Vertical FOV in degrees")
+    fov_angles: tuple[float, float, float, float] | None = Field(
+        None, description="Signed radians: left, right, down, up; preserves off-axis projection"
+    )
+
+    @field_validator("fov_angles")
+    @classmethod
+    def validate_fov_angles(
+        cls, value: tuple[float, float, float, float] | None,
+    ) -> tuple[float, float, float, float] | None:
+        if value is not None:
+            from moq3dgs.viewport.frustum import fov_tangents
+            fov_tangents(value)
+        return value
 
 
 class MoQSubscription(BaseModel):

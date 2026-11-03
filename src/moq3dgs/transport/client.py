@@ -105,7 +105,8 @@ class MoQClient:
             width=self.image_width, 
             height=self.image_height
         )
-        self._subscribed_tiers: Dict[str, int] = {}  # key → last-requested tier
+        self._pending_subscriptions: Dict[Tuple[str, str, int, int], float] = {}
+        self._subscription_retry_seconds = 30.0
         
         # Adaptive Budget Management
         self._gaussian_budget = 5_000_000  # Start with 5M splat budget
@@ -222,6 +223,8 @@ class MoQClient:
                             cluster[k] = cluster[k].to(self.device)
                     
                     self.cache.put(cluster)
+                    self._pending_subscriptions.pop((cluster["track_id"], cluster["group_id"],
+                                                     cluster["subgroup_id"], cluster["object_id"]), None)
                     self._clusters_received += 1
                     self._bytes_received += len(data)
                     logger.debug(
@@ -287,7 +290,10 @@ class MoQClient:
 
         # Compute frustum for subscription decisions
         view_matrix = np.array(update.view_matrix, dtype=np.float64)
-        proj = projection_matrix_from_fov(update.fov)
+        proj = projection_matrix_from_fov(
+            update.fov, aspect=self.image_width / self.image_height,
+            fov_angles=update.fov_angles,
+        )
         vp = proj @ view_matrix
         frustum = extract_frustum(vp)
         camera_pos = np.array(update.camera_position, dtype=np.float64)
@@ -326,45 +332,27 @@ class MoQClient:
         # Sort ascending = highest priority (0 = best) first
         candidates.sort(key=lambda x: x[0])
 
-        # ── Step 2: breadth-first tier subscription ──────────────────────────
-        # For each visible group, determine the *next* tier to request.
-        # We track per-group which tier was last subscribed in _subscribed_tiers.
+        # Request at most one missing tier per group and update. Pending tiers
+        # do not block later ones: a server may omit an empty subgroup.
         for priority, track_id, group_id in candidates:
-            key = f"{track_id}/{group_id}"
-            
-            # current_state is a tuple (max_subgroup, max_quality)
-            state = self._subscribed_tiers.get(key, (-1, 0))
-            curr_sub, curr_qual = state
-
-            # Breadth-first progression:
-            # 1. Fill all visible subsets with Base quality (Quality 0)
-            # 2. Then upgrade them to Full quality (Quality 1)
-            
-            if curr_sub < 2:
-                # Upgrade subset (stay at Base quality)
-                next_sub = curr_sub + 1
-                next_qual = 0
-            elif curr_qual < 1:
-                # All subsets present at Base quality, now upgrade to Full
-                # Start upgrading from Subset 0 again? 
-                # For simplicity, we upgrade the whole group to Quality 1
-                # but we do it subset by subset.
-                # Actually, let's just upgrade to Quality 1 for Subset 0, then 1, then 2.
-                # To track this, we might need a more complex state.
-                # Let's say: (sub, qual)
-                # (0,0) -> (1,0) -> (2,0) -> (0,1) -> (1,1) -> (2,1)
-                next_sub = 0
-                next_qual = 1
-            else:
-                continue # Fully subscribed at max quality
-
-            await self._subscribe(
-                track_id, group_id,
-                subgroup_id=next_sub,
-                quality_level=next_qual,
-                priority=priority,
-            )
-            self._subscribed_tiers[key] = (next_sub, next_qual)
+            now = time.monotonic()
+            missing = []
+            for quality in (0, 1):
+                for subgroup in (0, 1, 2):
+                    key = (track_id, group_id, subgroup, quality)
+                    if self.cache.has(*key):
+                        self._pending_subscriptions.pop(key, None)
+                    else:
+                        missing.append(key)
+            # Prefer never-requested tiers over retries, so an empty tier
+            # cannot starve the rest of a group.
+            key = next((k for k in missing if k not in self._pending_subscriptions), None)
+            if key is None:
+                key = next((k for k in missing if now - self._pending_subscriptions[k]
+                            >= self._subscription_retry_seconds), None)
+            if key is not None:
+                await self._subscribe(*key, priority)
+                self._pending_subscriptions[key] = time.monotonic()
 
     async def _subscribe(
         self,
@@ -398,7 +386,9 @@ class MoQClient:
 
     # -- render loop ---------------------------------------------------------
 
-    def get_visible_keys(self, view_matrix: np.ndarray, fov: float, margin: float = 0.2) -> Set[Tuple[str, str]]:
+    def get_visible_keys(self, view_matrix: np.ndarray, fov: float, margin: float = 0.2,
+                         fov_angles: tuple[float, float, float, float] | None = None,
+                         ) -> Set[Tuple[str, str]]:
         """Identify which track/group IDs are visible in the current viewport.
         
         Uses a 'halo' frustum (expanded by margin) to prevent objects from 
@@ -406,7 +396,18 @@ class MoQClient:
         """
         # Expand FOV by margin to include a halo of off-screen clusters
         relaxed_fov = min(179.0, fov * (1.0 + margin))
-        proj = projection_matrix_from_fov(relaxed_fov, aspect=self.image_width / self.image_height)
+        relaxed_angles = None
+        if fov_angles is not None:
+            from moq3dgs.viewport.frustum import fov_tangents
+            left, right, down, up = fov_tangents(fov_angles)
+            center_x, center_y = (left + right) / 2, (down + up) / 2
+            half_x, half_y = (right - left) * (1 + margin) / 2, (up - down) * (1 + margin) / 2
+            angles = np.arctan(
+                [center_x - half_x, center_x + half_x, center_y - half_y, center_y + half_y])
+            relaxed_angles = (float(angles[0]), float(angles[1]), float(angles[2]), float(angles[3]))
+        proj = projection_matrix_from_fov(
+            relaxed_fov, aspect=self.image_width / self.image_height, fov_angles=relaxed_angles,
+        )
         vp = proj @ view_matrix
         frust = extract_frustum(vp)
         
@@ -436,6 +437,7 @@ class MoQClient:
         view_matrix: List[List[float]],
         fov: float,
         camera_position: List[float],
+        fov_angles: tuple[float, float, float, float] | None = None,
     ) -> Optional[Path]:
         """Render the current cache contents and save to disk.
 
@@ -457,14 +459,16 @@ class MoQClient:
 
         # 1. Compute view state for prioritisation
         vm_np = np.array(view_matrix)
-        proj_np = projection_matrix_from_fov(fov, aspect=self.image_width / self.image_height)
+        proj_np = projection_matrix_from_fov(
+            fov, aspect=self.image_width / self.image_height, fov_angles=fov_angles,
+        )
         vp_np = proj_np @ vm_np
         frust = extract_frustum(vp_np)
         cam_fwd = camera_forward_from_view_matrix(view_matrix)
         cam_pos_np = np.array(camera_position)
 
         # 2. Get visible clusters with a halo margin (prevents edge popping)
-        visible_keys = self.get_visible_keys(vm_np, fov, margin=0.2)
+        visible_keys = self.get_visible_keys(vm_np, fov, margin=0.2, fov_angles=fov_angles)
         
         # 3. Prioritise visible clusters for budget management
         # We want to fill the budget with the highest priority clusters first.
@@ -542,6 +546,8 @@ class MoQClient:
             camera_pos=cam_pos,
             image_width=self.image_width,
             image_height=self.image_height,
+            fov_y_deg=fov,
+            fov_angles=fov_angles,
             device=self.device,
         )
 
@@ -612,6 +618,7 @@ class MoQClient:
                 view_matrix=update.view_matrix,
                 fov=update.fov,
                 camera_position=update.camera_position,
+                fov_angles=update.fov_angles,
             )
             if path:
                 rendered_paths.append(str(path))

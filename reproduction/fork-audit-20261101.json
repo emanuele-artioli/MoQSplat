@@ -1,0 +1,270 @@
+[
+  {
+    "repo": "emanuele-artioli/MoQSplat",
+    "branches": [
+      {
+        "name": "main",
+        "sha": "15e02a669456d767abf5d68f9fb1f909f260dde0",
+        "files": 97,
+        "transport_candidates": [
+          {
+            "path": "src/moq3dgs/transport/__init__.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "26e87dee2546e5ab535641b6943a405a09fbd29c",
+            "size": 72,
+            "url": "https://api.github.com/repos/emanuele-artioli/MoQSplat/git/blobs/26e87dee2546e5ab535641b6943a405a09fbd29c"
+          },
+          {
+            "path": "src/moq3dgs/transport/client.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3a5b32209685dd40005faba290130ef1c5df85fe",
+            "size": 26874,
+            "url": "https://api.github.com/repos/emanuele-artioli/MoQSplat/git/blobs/3a5b32209685dd40005faba290130ef1c5df85fe"
+          },
+          {
+            "path": "src/moq3dgs/transport/manifest.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d8b7cb130fe497a50b50e70c14f3ac81152f22cc",
+            "size": 3969,
+            "url": "https://api.github.com/repos/emanuele-artioli/MoQSplat/git/blobs/d8b7cb130fe497a50b50e70c14f3ac81152f22cc"
+          },
+          {
+            "path": "src/moq3dgs/transport/protocol.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c76c57ef9e27a35294939979d67d3801c86bdee9",
+            "size": 5826,
+            "url": "https://api.github.com/repos/emanuele-artioli/MoQSplat/git/blobs/c76c57ef9e27a35294939979d67d3801c86bdee9"
+          },
+          {
+            "path": "src/moq3dgs/transport/server.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "691d2aed2ba06bac181bf9ab7e0f0812bf71f116",
+            "size": 9709,
+            "url": "https://api.github.com/repos/emanuele-artioli/MoQSplat/git/blobs/691d2aed2ba06bac181bf9ab7e0f0812bf71f116"
+          }
+        ]
+      }
+    ],
+    "nested_forks": [
+      "EternalSky23/MoQSplat",
+      "cd-athena/MoQSplat"
+    ],
+    "releases": []
+  },
+  {
+    "repo": "cd-athena/MoQSplat",
+    "branches": [
+      {
+        "name": "emanuele",
+        "sha": "806a4294e95f1e9cb9acc17d5c67a903dc84380c",
+        "files": 59,
+        "transport_candidates": [
+          {
+            "path": "src/moq3dgs/transport/__init__.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "26e87dee2546e5ab535641b6943a405a09fbd29c",
+            "size": 72,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/26e87dee2546e5ab535641b6943a405a09fbd29c"
+          },
+          {
+            "path": "src/moq3dgs/transport/client.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3a5b32209685dd40005faba290130ef1c5df85fe",
+            "size": 26874,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/3a5b32209685dd40005faba290130ef1c5df85fe"
+          },
+          {
+            "path": "src/moq3dgs/transport/manifest.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d8b7cb130fe497a50b50e70c14f3ac81152f22cc",
+            "size": 3969,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/d8b7cb130fe497a50b50e70c14f3ac81152f22cc"
+          },
+          {
+            "path": "src/moq3dgs/transport/protocol.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c76c57ef9e27a35294939979d67d3801c86bdee9",
+            "size": 5826,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/c76c57ef9e27a35294939979d67d3801c86bdee9"
+          },
+          {
+            "path": "src/moq3dgs/transport/server.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "691d2aed2ba06bac181bf9ab7e0f0812bf71f116",
+            "size": 9709,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/691d2aed2ba06bac181bf9ab7e0f0812bf71f116"
+          }
+        ]
+      },
+      {
+        "name": "main",
+        "sha": "d258485e8813b5d4acac212685ffd5669beb8eca",
+        "files": 97,
+        "transport_candidates": [
+          {
+            "path": "src/moq3dgs/transport/__init__.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "26e87dee2546e5ab535641b6943a405a09fbd29c",
+            "size": 72,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/26e87dee2546e5ab535641b6943a405a09fbd29c"
+          },
+          {
+            "path": "src/moq3dgs/transport/client.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3a5b32209685dd40005faba290130ef1c5df85fe",
+            "size": 26874,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/3a5b32209685dd40005faba290130ef1c5df85fe"
+          },
+          {
+            "path": "src/moq3dgs/transport/manifest.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d8b7cb130fe497a50b50e70c14f3ac81152f22cc",
+            "size": 3969,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/d8b7cb130fe497a50b50e70c14f3ac81152f22cc"
+          },
+          {
+            "path": "src/moq3dgs/transport/protocol.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c76c57ef9e27a35294939979d67d3801c86bdee9",
+            "size": 5826,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/c76c57ef9e27a35294939979d67d3801c86bdee9"
+          },
+          {
+            "path": "src/moq3dgs/transport/server.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "691d2aed2ba06bac181bf9ab7e0f0812bf71f116",
+            "size": 9709,
+            "url": "https://api.github.com/repos/cd-athena/MoQSplat/git/blobs/691d2aed2ba06bac181bf9ab7e0f0812bf71f116"
+          }
+        ]
+      }
+    ],
+    "nested_forks": [
+      "mrezaghafari/MoQSplat"
+    ],
+    "releases": []
+  },
+  {
+    "repo": "EternalSky23/MoQSplat",
+    "branches": [
+      {
+        "name": "main",
+        "sha": "1953934487ebd8a03cd18c257695f0ecdae95aee",
+        "files": 97,
+        "transport_candidates": [
+          {
+            "path": "src/moq3dgs/transport/__init__.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "26e87dee2546e5ab535641b6943a405a09fbd29c",
+            "size": 72,
+            "url": "https://api.github.com/repos/EternalSky23/MoQSplat/git/blobs/26e87dee2546e5ab535641b6943a405a09fbd29c"
+          },
+          {
+            "path": "src/moq3dgs/transport/client.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "40c79a2b174d6ead9d00e331048b5dcf813bad4d",
+            "size": 26523,
+            "url": "https://api.github.com/repos/EternalSky23/MoQSplat/git/blobs/40c79a2b174d6ead9d00e331048b5dcf813bad4d"
+          },
+          {
+            "path": "src/moq3dgs/transport/manifest.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d8b7cb130fe497a50b50e70c14f3ac81152f22cc",
+            "size": 3969,
+            "url": "https://api.github.com/repos/EternalSky23/MoQSplat/git/blobs/d8b7cb130fe497a50b50e70c14f3ac81152f22cc"
+          },
+          {
+            "path": "src/moq3dgs/transport/protocol.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c76c57ef9e27a35294939979d67d3801c86bdee9",
+            "size": 5826,
+            "url": "https://api.github.com/repos/EternalSky23/MoQSplat/git/blobs/c76c57ef9e27a35294939979d67d3801c86bdee9"
+          },
+          {
+            "path": "src/moq3dgs/transport/server.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "691d2aed2ba06bac181bf9ab7e0f0812bf71f116",
+            "size": 9709,
+            "url": "https://api.github.com/repos/EternalSky23/MoQSplat/git/blobs/691d2aed2ba06bac181bf9ab7e0f0812bf71f116"
+          }
+        ]
+      }
+    ],
+    "nested_forks": [],
+    "releases": []
+  },
+  {
+    "repo": "mrezaghafari/MoQSplat",
+    "branches": [
+      {
+        "name": "main",
+        "sha": "c0c64a6662cc4e7f4ee0aafee3b61951e17e8aec",
+        "files": 97,
+        "transport_candidates": [
+          {
+            "path": "src/moq3dgs/transport/__init__.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "26e87dee2546e5ab535641b6943a405a09fbd29c",
+            "size": 72,
+            "url": "https://api.github.com/repos/mrezaghafari/MoQSplat/git/blobs/26e87dee2546e5ab535641b6943a405a09fbd29c"
+          },
+          {
+            "path": "src/moq3dgs/transport/client.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3a5b32209685dd40005faba290130ef1c5df85fe",
+            "size": 26874,
+            "url": "https://api.github.com/repos/mrezaghafari/MoQSplat/git/blobs/3a5b32209685dd40005faba290130ef1c5df85fe"
+          },
+          {
+            "path": "src/moq3dgs/transport/manifest.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d8b7cb130fe497a50b50e70c14f3ac81152f22cc",
+            "size": 3969,
+            "url": "https://api.github.com/repos/mrezaghafari/MoQSplat/git/blobs/d8b7cb130fe497a50b50e70c14f3ac81152f22cc"
+          },
+          {
+            "path": "src/moq3dgs/transport/protocol.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c76c57ef9e27a35294939979d67d3801c86bdee9",
+            "size": 5826,
+            "url": "https://api.github.com/repos/mrezaghafari/MoQSplat/git/blobs/c76c57ef9e27a35294939979d67d3801c86bdee9"
+          },
+          {
+            "path": "src/moq3dgs/transport/server.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "691d2aed2ba06bac181bf9ab7e0f0812bf71f116",
+            "size": 9709,
+            "url": "https://api.github.com/repos/mrezaghafari/MoQSplat/git/blobs/691d2aed2ba06bac181bf9ab7e0f0812bf71f116"
+          }
+        ]
+      }
+    ],
+    "nested_forks": [],
+    "releases": []
+  }
+]

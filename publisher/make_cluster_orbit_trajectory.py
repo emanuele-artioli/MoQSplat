@@ -59,13 +59,11 @@ import math
 import os
 import sys
 from typing import Optional, List, Dict, Any
-os.environ["TORCH_CUDA_ARCH_LIST"] = "7.0"
-os.environ["MAX_JOBS"] = "1"
 
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gsplat_object_segmentation import cam_axes_from_euler   # noqa: E402
+from gsplat_clustering_vmaf import cam_axes_from_euler   # noqa: E402
 
 
 def _pick_target_cluster(catalog: dict,
@@ -151,6 +149,25 @@ def synthesise_orbit_trajectory(preview_cam: dict,
         raise ValueError(f"need at least 2 frames, got {n_frames}")
 
     centroid = np.asarray(preview_cam["centroid"], dtype=np.float64)
+    if preview_cam.get("format") == "opengl_matrix":
+        base_view = np.asarray(preview_cam["view_matrix"], dtype=np.float64)
+        base_c2w = np.linalg.inv(base_view)
+        frames = []
+        for i in range(n_frames):
+            t = i / (n_frames - 1)
+            delta = amplitude_deg * math.sin(2 * math.pi * t) * 0.5 * (1 - math.cos(2 * math.pi * t))
+            angle = math.radians(delta)
+            rotation = np.array([[math.cos(angle), 0, math.sin(angle)], [0, 1, 0],
+                                 [-math.sin(angle), 0, math.cos(angle)]])
+            c2w = base_c2w.copy()
+            c2w[:3, :3] = rotation @ base_c2w[:3, :3]
+            c2w[:3, 3] = centroid + rotation @ (base_c2w[:3, 3] - centroid)
+            view = base_view if i == 0 else np.linalg.inv(c2w)
+            frames.append({"timestamp_ms": int(round(i * 1000 / fps)),
+                           "view_matrix": view.tolist(), "camera_position": c2w[:3, 3].tolist(),
+                           "fov": preview_cam["fov"], "fov_angles": preview_cam["fov_angles"],
+                           "width": preview_cam["width"], "height": preview_cam["height"]})
+        return frames
     base_az  = float(preview_cam["angle"])
     base_el  = float(preview_cam["elevation"])
 
@@ -240,7 +257,7 @@ def main():
     if not os.path.exists(catalog_path):
         raise FileNotFoundError(
             f"clusters_catalog.json not found at {catalog_path}. "
-            f"Run gsplat_object_segmentation.py with --clustering first.")
+            f"Run gsplat_clustering_vmaf.py with --clustering first.")
     with open(catalog_path) as f:
         catalog = json.load(f)
     print(f"[orbit] loaded catalog from {catalog_path} "
@@ -251,7 +268,7 @@ def main():
         raise RuntimeError(
             f"cluster {target['cluster_id']} has no 'preview_camera' field. "
             f"Re-run segmentation with this updated version of "
-            f"gsplat_object_segmentation.py (it now persists the camera "
+            f"gsplat_clustering_vmaf.py (it now persists the camera "
             f"into the catalog).")
 
     frames = synthesise_orbit_trajectory(
@@ -264,7 +281,10 @@ def main():
     os.makedirs(os.path.dirname(os.path.abspath(args.out_json)) or ".",
                  exist_ok=True)
     with open(args.out_json, "w") as f:
-        json.dump(frames, f, indent=2)
+        result = ({"metadata": {"camera_basis": "OpenGL", "cluster_id": target["cluster_id"]},
+                   "frames": frames} if target["preview_camera"].get("format") == "opengl_matrix"
+                  else frames)
+        json.dump(result, f, indent=2)
     print(f"[orbit] wrote {len(frames)} frames -> {args.out_json}")
     print(f"[orbit] target cluster: id={target['cluster_id']} "
           f"label={target['label']} classes={target['object_classes']}")
