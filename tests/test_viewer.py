@@ -111,3 +111,4 @@ def test_no_useful_frame_is_not_reported_as_a_held_image():
     )
     assert not result["display_held_previous"]
     assert result["viewer_held_frames"] == 0
+    assert "Waiting for enough scene data" in hub.status["state"]

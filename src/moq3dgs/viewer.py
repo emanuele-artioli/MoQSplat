@@ -161,6 +161,8 @@ class FrameHub:
                 self.status["state"] = (
                     "Waiting for scene data for this view; showing the last useful frame."
                 )
+            elif not nonblack and incomplete:
+                self.status["state"] = "Waiting for enough scene data to show this view."
             self.condition.notify_all()
             return presentation
 
