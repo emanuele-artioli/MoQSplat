@@ -20,3 +20,17 @@ def verify_arrays(path, expected):
             }
             if evidence != expected[name] or not np.isfinite(array).all():
                 raise ValueError(f"received source attribute mismatch: {name}")
+
+
+def missing_cache_bytes(layers, directory):
+    """Estimate new disk space without charging existing same-size content twice.
+
+    This is a size precheck only. LayerReceiver still verifies every cached
+    file's SHA256 before use; replacing a corrupt file can need extra space.
+    """
+    required = 0
+    for layer in layers:
+        path = directory / f"{layer.sha256}.bin"
+        if not path.is_file() or path.stat().st_size != layer.size:
+            required += layer.size
+    return required

@@ -17,7 +17,7 @@ import torch
 from PIL import Image
 
 from moq3dgs.client_runtime import LayerStore
-from moq3dgs.transport.array_checks import verify_arrays
+from moq3dgs.transport.array_checks import missing_cache_bytes, verify_arrays
 from moq3dgs.transport.moq_backend import (
     VERSIONS,
     Layer,
@@ -87,8 +87,9 @@ async def play(args):
             identity = connection.identity
             (output / "manifest.json").write_text(json.dumps(manifest, indent=2))
             layers = [Layer(**item) for item in manifest["layers"]]
-            if shutil.disk_usage(cache).free < sum(layer.size for layer in layers):
-                raise RuntimeError("insufficient free space for declared scene disk cache")
+            required_disk_bytes = await asyncio.to_thread(missing_cache_bytes, layers, cache)
+            if shutil.disk_usage(cache).free < required_disk_bytes:
+                raise RuntimeError("insufficient free space for missing scene cache files")
             centroids = manifest["metadata"]["group_centroids"]
             expected = manifest["metadata"]["source_array_hashes"]
 
