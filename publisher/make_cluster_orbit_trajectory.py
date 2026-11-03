@@ -59,13 +59,11 @@ import math
 import os
 import sys
 from typing import Optional, List, Dict, Any
-os.environ["TORCH_CUDA_ARCH_LIST"] = "7.0"
-os.environ["MAX_JOBS"] = "1"
 
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gsplat_object_segmentation import cam_axes_from_euler   # noqa: E402
+from gsplat_clustering_vmaf import cam_axes_from_euler   # noqa: E402
 
 
 def _pick_target_cluster(catalog: dict,
@@ -259,7 +257,7 @@ def main():
     if not os.path.exists(catalog_path):
         raise FileNotFoundError(
             f"clusters_catalog.json not found at {catalog_path}. "
-            f"Run gsplat_object_segmentation.py with --clustering first.")
+            f"Run gsplat_clustering_vmaf.py with --clustering first.")
     with open(catalog_path) as f:
         catalog = json.load(f)
     print(f"[orbit] loaded catalog from {catalog_path} "
@@ -270,7 +268,7 @@ def main():
         raise RuntimeError(
             f"cluster {target['cluster_id']} has no 'preview_camera' field. "
             f"Re-run segmentation with this updated version of "
-            f"gsplat_object_segmentation.py (it now persists the camera "
+            f"gsplat_clustering_vmaf.py (it now persists the camera "
             f"into the catalog).")
 
     frames = synthesise_orbit_trajectory(
