@@ -36,6 +36,7 @@ def setup_runtime(tmp_path, monkeypatch):
         save(file)
         store.add_completed(layer(name, level), file, [0, 0, -1])
     monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "set_device", lambda *_: None)
     monkeypatch.setattr(torch.cuda, "reset_peak_memory_stats", lambda *_: None)
     monkeypatch.setattr(torch.cuda, "max_memory_allocated", lambda *_: 0)
     monkeypatch.setattr(torch.cuda, "memory_reserved", lambda *_: 0)

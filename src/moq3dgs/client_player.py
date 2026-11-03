@@ -9,6 +9,7 @@ import resource
 import shutil
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -45,6 +46,8 @@ async def play(args):
     hub = FrameHub(controller)
     server = start_viewer(hub, args.viewer_port) if args.viewer_port is not None else None
     store = LayerStore(args.gpu_memory_mib, args.cpu_cache_mib, args.device)
+    renderer = ThreadPoolExecutor(max_workers=1, thread_name_prefix="moqsplat-cuda")
+    event_loop = asyncio.get_running_loop()
     lock = asyncio.Lock()
     started = time.monotonic()
     frames = 0
@@ -166,12 +169,12 @@ async def play(args):
                         budget, hub.pending_budget = hub.pending_budget, None
                     async with lock:
                         if budget is not None:
-                            store.set_gpu_budget(budget)
+                            await event_loop.run_in_executor(renderer, store.set_gpu_budget, budget)
                         if not any(e.layer.subgroup == 0 for e in store.entries.values()):
                             image = None
                         else:
-                            image, metrics = await asyncio.to_thread(
-                                store.render, pose, args.width, args.height
+                            image, metrics = await event_loop.run_in_executor(
+                                renderer, store.render, pose, args.width, args.height
                             )
                     if image is not None:
                         nonblack_frames += bool(np.any(image))
@@ -281,7 +284,15 @@ async def play(args):
                 raise RuntimeError("session ended without a complete renderable base layer")
     except BaseException as exc:
         failure = exc
-        result.update(valid=False, error=f"{type(exc).__name__}: {exc}", frames_rendered=frames)
+        result.update(
+            valid=False,
+            error=f"{type(exc).__name__}: {exc}",
+            frames_rendered=frames,
+            last_frame=last_metrics,
+            reconnects=connection.reconnects,
+            layers_received=len(received),
+            cuda_peak_allocated_bytes=peak,
+        )
     finally:
         if control:
             control.cancel()
@@ -290,6 +301,7 @@ async def play(args):
         await asyncio.gather(*downloads, *([control] if control else []), return_exceptions=True)
         if reader:
             await reader.close()
+        await asyncio.to_thread(renderer.shutdown, wait=True)
         with hub.condition:
             hub.stopped = True
             hub.condition.notify_all()

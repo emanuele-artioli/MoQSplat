@@ -8,6 +8,7 @@ measured. OOM retries discard enhancements, never base layers.
 from __future__ import annotations
 
 import heapq
+import threading
 import zipfile
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -220,9 +221,11 @@ class LayerStore:
             device=self.device,
         )
 
+    @torch.inference_mode()
     def render(self, pose, width, height):
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is required for client rendering")
+        torch.cuda.set_device(self.device)
         if width <= 0 or height <= 0:
             raise ValueError("image dimensions must be positive")
         selected = self._select(pose)
@@ -274,6 +277,7 @@ class LayerStore:
                 retries += 1
                 torch.cuda.empty_cache()
         metrics = {
+            "render_thread_id": threading.get_ident(),
             "resident_layers": [e.layer.name for e in selected],
             "selected_layer_ids": [e.layer.name for e in selected],
             "splat_count": sum(self.gpu[e.layer.name][0]["means"].shape[0] for e in selected),

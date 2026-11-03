@@ -7,6 +7,7 @@ import argparse
 import asyncio
 import csv
 import json
+import math
 import os
 import socket
 import subprocess
@@ -50,6 +51,22 @@ def command(argv, log, timeout, env=None):
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
             output.flush()
             raise RuntimeError(f"{exc}: {log.read_text()[-4000:]}") from exc
+
+
+def validate_curve(rows):
+    """Check the five-level functional VMAF output, without assuming monotonic quality."""
+    if len(rows) != 5 or {int(row["level"]) for row in rows} != set(range(5)):
+        raise ValueError("VMAF curve must contain exactly levels zero through four")
+    previous = 0
+    for row in sorted(rows, key=lambda item: int(item["level"])):
+        size = int(row["cumulative_bytes"])
+        if size <= previous or int(row["n_gaussians"]) < 1 or int(row["n_frames"]) < 1:
+            raise ValueError("VMAF curve has invalid size or coverage")
+        previous = size
+        for key in ("vmaf_mean", "vmaf_min", "vmaf_harmonic_mean"):
+            value = float(row[key])
+            if not math.isfinite(value) or not 0 <= value <= 100:
+                raise ValueError(f"VMAF metric outside finite [0,100] bounds: {key}")
 
 
 class Children:
@@ -180,8 +197,7 @@ async def semantic(args, output, children, relay):
         raise ValueError("semantic VMAF pipeline did not produce its curve")
     with curves[0].open() as source:
         rows = list(csv.DictReader(source))
-    if len(rows) != 5:
-        raise ValueError("VMAF curve must contain five levels")
+    validate_curve(rows)
     runner = [sys.executable, str(ROOT / "scripts/run_moq_reproduction.py")]
     publisher = children.start(
         "semantic-publisher",
@@ -236,6 +252,7 @@ async def semantic(args, output, children, relay):
         "valid": True,
         "objects": len(manifest["objects"]),
         "vmaf_levels": len(rows),
+        "vmaf_curve": rows,
         "received": received,
     }
 
