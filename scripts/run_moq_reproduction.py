@@ -101,7 +101,7 @@ async def publish(args):
         )
         try:
             await asyncio.wait_for(client.session.closed(), args.duration)
-        except TimeoutError:
+        except asyncio.TimeoutError:
             pass
         finally:
             broadcast.close()
