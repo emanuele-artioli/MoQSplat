@@ -448,6 +448,7 @@ async def experience(args):
                         or summary["frames_rendered"] < 3
                         or summary["nonblack_frames"] < 1
                         or summary["input_events"] < 1
+                        or not summary["input_to_render_ms"]
                     ):
                         raise ValueError(
                             f"continuous client did not satisfy controls/rendering: {label}"
@@ -459,7 +460,7 @@ async def experience(args):
                     if label == "direct" and summary["last_frame"]["evictions"] < 1:
                         raise ValueError("direct client did not exercise real GPU layer eviction")
                     summaries.append(summary)
-                if label == "recovery-soak" and not any(s["reconnects"] for s in summaries):
+                if label == "recovery-soak" and not all(s["reconnects"] for s in summaries):
                     raise ValueError("relay restart did not exercise a recovered subscriber")
                 result["cases"].append(
                     {
