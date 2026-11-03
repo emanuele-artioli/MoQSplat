@@ -78,6 +78,15 @@ paths explicitly. The historical local links are `assets/bicycle.ply` and
 `assets/bicycle_trace.json`; the latter must not be replaced by the nonexistent
 `assets/eval_trace.json`. Record the source, license and SHA256 of each asset.
 
+For acquisition, the [official 3DGS repository](https://github.com/graphdeco-inria/gaussian-splatting)
+links its [pretrained-model archive](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/pretrained/models.zip).
+The [EyeNavGS Rutgers dataset](https://github.com/symmru/EyeNavGS_Rutgers_Dataset)
+provides the raw per-user traces; this validation used
+[`user101_bicycle.csv` at the pinned dataset revision](https://github.com/symmru/EyeNavGS_Rutgers_Dataset/blob/7f264fda0223cbc74e191f115ef9fd3b580d8cf4/dataset/bicycle/user101_bicycle.csv).
+Use the corrected converter below and check the recorded hashes. The upstream
+14 GB model archive was not downloaded again in this audit, so its current
+contents are not asserted to match the already available tested PLY.
+
 The real-scene renderer uses world-to-camera OpenGL matrices: negative Z is
 forward and positive Y is up. It converts camera axes to gsplat's OpenCV
 convention. `scripts/validate_reproduction.py` accepts an explicit input camera
