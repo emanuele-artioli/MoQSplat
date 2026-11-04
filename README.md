@@ -63,4 +63,10 @@ full-scene transport and source-render comparison, including failed attempts.
 clean installation, semantic publisher/VMAF, continuous playback, memory
 eviction and concurrent recovery tests, together with failures and limits.
 
+Thanks to Shao-Yang Hung ([@EternalSky23](https://github.com/EternalSky23))
+for identifying the SH coefficient-count, camera-FOV and subscription/culling
+problems and contributing [PR #2](https://github.com/emanuele-artioli/MoQSplat/pull/2).
+The integrated fixes include corrected SH channel ordering, camera/frustum
+conventions and retryable delivery tracking.
+
 MIT license.
